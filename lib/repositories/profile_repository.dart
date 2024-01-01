@@ -15,7 +15,7 @@ class ProfileRepository {
       final profileData = await supabaseClient
           .from('ProfileData')
           .select()
-          .eq('id', supabaseClient.auth.currentUser!.email)
+          .eq('id', supabaseClient.auth.currentUser!.email.toString())
           .limit(1);
       print(profileData);
       if (profileData.isNotEmpty) {

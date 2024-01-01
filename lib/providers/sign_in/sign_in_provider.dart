@@ -14,8 +14,28 @@ class SignInProvider extends StateNotifier<SignInState> with LocatorMixin {
       state = state.copyWith(signInStatus: SignInStatus.success);
       print('signInState: $state');
     } on CustomError catch (e) {
-      state = state.copyWith(signInStatus: SignInStatus.error, error: e);
-      rethrow;
+      if (e.code == "중도포기") {
+        state = SignInState.initial();
+      } else {
+        state = state.copyWith(signInStatus: SignInStatus.error, error: e);
+        rethrow;
+      }
+    }
+  }
+
+  Future<void> appeSignIn() async {
+    state = state.copyWith(signInStatus: SignInStatus.submitting);
+    try {
+      await read<AuthRepository>().signInWithApple();
+      state = state.copyWith(signInStatus: SignInStatus.success);
+      print('signInState: $state');
+    } on CustomError catch (e) {
+      if (e.code == "중도포기") {
+        state = SignInState.initial();
+      } else {
+        state = state.copyWith(signInStatus: SignInStatus.error, error: e);
+        rethrow;
+      }
     }
   }
 }

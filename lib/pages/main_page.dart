@@ -81,15 +81,26 @@ class _MainPageState extends State<MainPage> {
       );
     } else if (profileState.profileStatus == ProfileStatus.error) {
       return Scaffold(
-        body: Center(
-          child: Text(
-            '네트워크 오류가 발생했습니다. 앱을 다시 켜주세요.',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 20.0,
-              color: Colors.red,
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              '네트워크 오류가 발생했습니다. 앱을 다시 켜주세요.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 20.0,
+                color: Colors.red,
+              ),
             ),
-          ),
+            TextButton(
+              child: Text(
+                "로그아웃",
+              ),
+              onPressed: () {
+                context.read<AuthProvider>().signout();
+              },
+            )
+          ],
         ),
       );
     }

@@ -12,7 +12,7 @@ class SupabaseManager {
     final findResponse = await supabase.from(table).select().eq('id', id);
 
     // 데이터가 없으면 새로운 row를 추가합니다.
-    if (findResponse == null || findResponse == []) {
+    if (findResponse == null || findResponse.isEmpty) {
       await supabase.from(table).insert(data);
       return false; // 새로운 데이터 insert 시 false
     }

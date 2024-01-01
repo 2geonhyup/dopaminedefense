@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.dopamine_defense_1">
+    package="com.woori.dopaminedefense">
    <application
         android:label="dopamine_defense_1"
         android:name="${applicationName}"

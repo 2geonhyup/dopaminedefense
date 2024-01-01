@@ -27,7 +27,6 @@ void main() async {
     url: 'https://ebneycbqwtuhyxggghia.supabase.co',
     anonKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVibmV5Y2Jxd3R1aHl4Z2dnaGlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODkxNDA2NjgsImV4cCI6MjAwNDcxNjY2OH0.PT_lFBBhwbxI_fRl6HRu8BepdfBqI9j_rgShnJWYG8c',
-    authFlowType: sp.AuthFlowType.pkce,
   );
 
   await dotenv.load(fileName: ".env");
@@ -80,6 +79,7 @@ class MyApp extends StatelessWidget {
         title: 'Flutter Demo',
         theme: ThemeData(
           scaffoldBackgroundColor: Colors.white,
+          fontFamily: "Pretendard",
           colorScheme: ColorScheme.light(
             primary: pointColor, // 기본 색상
           ),

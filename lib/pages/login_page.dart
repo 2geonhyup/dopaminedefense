@@ -25,53 +25,64 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  void _appleSubmit() async {
+    try {
+      await context.read<SignInProvider>().appeSignIn();
+    } on CustomError catch (e) {
+      errorDialog(context, e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final signInState = context.watch<SignInState>();
     return WillPopScope(
         onWillPop: () async => false,
         child: Scaffold(
+          backgroundColor: pointColor,
           body: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                children: [
-                  SizedBox(
-                    height: 50,
-                  ),
-                  Image.asset('assets/images/splash_icon.png'),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Text(
-                    "DOPAMINE",
+              Expanded(
+                child: Center(
+                  child: Text(
+                    "도파민 디펜스",
                     style: TextStyle(
                         fontSize: 50,
-                        color: pointColor,
-                        fontWeight: FontWeight.w800),
-                  ),
-                  Text(
-                    "DEFENSE",
-                    style: TextStyle(
-                        fontSize: 59,
-                        color: pointColor,
-                        fontWeight: FontWeight.w800),
-                  ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 50.0),
-                child: Container(
-                  width: 200,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed:
-                        signInState.signInStatus == SignInStatus.submitting
-                            ? null
-                            : _submit,
-                    child: const Text('Kakao login'),
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900),
                   ),
                 ),
+              ),
+              Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 15.0),
+                    child: InkWell(
+                        onTap:
+                            signInState.signInStatus == SignInStatus.submitting
+                                ? null
+                                : _submit,
+                        child: Container(
+                            width: 300,
+                            height: 45,
+                            child:
+                                Image.asset('assets/images/kakao_login.png'))),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 50.0),
+                    child: InkWell(
+                        onTap:
+                            signInState.signInStatus == SignInStatus.submitting
+                                ? null
+                                : _appleSubmit,
+                        child: Container(
+                            width: 300,
+                            height: 48,
+                            child: Image.asset(
+                                'assets/images/appleid_button.png'))),
+                  ),
+                ],
               ),
             ],
           ),
