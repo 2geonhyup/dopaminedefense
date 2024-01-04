@@ -33,6 +33,17 @@ class DefenseModel extends Equatable {
     );
   }
 
+  factory DefenseModel.initial() {
+    return DefenseModel(
+        id: -1,
+        course: "",
+        day: -1,
+        level: -1,
+        content: "",
+        tag: [],
+        source: []);
+  }
+
   @override
   List<Object> get props {
     return [id, course, day, level, content, tag, source];

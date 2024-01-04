@@ -12,6 +12,7 @@ class ReadModel extends Equatable {
   final int defenseId;
   final ReadStatus readStatus;
   final FeedbackModel feedback;
+  final int score;
 
   const ReadModel({
     required this.date,
@@ -20,6 +21,7 @@ class ReadModel extends Equatable {
     required this.defenseId,
     required this.readStatus,
     required this.feedback,
+    required this.score,
   });
 
   factory ReadModel.fromDoc(var readDoc) {
@@ -30,30 +32,34 @@ class ReadModel extends Equatable {
         length: readData["length"] ?? 0,
         defenseId: readData["text_id"] ?? 0,
         readStatus: ReadStatus.end,
+        score: readData["score"] ?? 0,
         feedback: readData["feedback"] == null
             ? FeedbackModel.initialFeedback()
             : FeedbackModel.fromJson(jsonDecode(readData["feedback"])));
   }
 
-  ReadModel copyWith(
-      {String? date,
-      int? time,
-      int? length,
-      int? defenseId,
-      ReadStatus? readStatus,
-      FeedbackModel? feedback}) {
+  ReadModel copyWith({
+    String? date,
+    int? time,
+    int? length,
+    int? defenseId,
+    ReadStatus? readStatus,
+    FeedbackModel? feedback,
+    int? score,
+  }) {
     return ReadModel(
         date: date ?? this.date,
         time: time ?? this.time,
         length: length ?? this.length,
         defenseId: defenseId ?? this.defenseId,
         readStatus: readStatus ?? this.readStatus,
-        feedback: feedback ?? this.feedback);
+        feedback: feedback ?? this.feedback,
+        score: score ?? this.score);
   }
 
   @override
   List<Object> get props {
-    return [date, time, length, defenseId, readStatus, feedback];
+    return [date, time, length, defenseId, readStatus, feedback, score];
   }
 
   @override

@@ -1,8 +1,10 @@
 import 'package:dopamine_defense_1/constants.dart';
+import 'package:dopamine_defense_1/pages/home_page.dart';
+import 'package:dopamine_defense_1/pages/loading_page.dart';
 import 'package:dopamine_defense_1/pages/login_page.dart';
 import 'package:dopamine_defense_1/pages/main_page.dart';
 import 'package:dopamine_defense_1/pages/splash_page.dart';
-import 'package:dopamine_defense_1/pages/summary_page.dart';
+import 'package:dopamine_defense_1/pages/summary_page_record.dart';
 import 'package:dopamine_defense_1/providers/auth/auth_provider.dart';
 import 'package:dopamine_defense_1/providers/auth/auth_state.dart';
 import 'package:dopamine_defense_1/providers/profile/profile_provider.dart';
@@ -11,12 +13,15 @@ import 'package:dopamine_defense_1/providers/sign_in/sign_in_provider.dart';
 import 'package:dopamine_defense_1/providers/sign_in/sign_in_state.dart';
 import 'package:dopamine_defense_1/providers/read/read_provider.dart';
 import 'package:dopamine_defense_1/providers/read/read_state.dart';
+import 'package:dopamine_defense_1/providers/today/today_provider.dart';
+import 'package:dopamine_defense_1/providers/today/today_state.dart';
 import 'package:dopamine_defense_1/repositories/auth_repository.dart';
 import 'package:dopamine_defense_1/repositories/defense_repository.dart';
 import 'package:dopamine_defense_1/repositories/feedback_repository.dart';
 import 'package:dopamine_defense_1/repositories/profile_repository.dart';
-import 'package:dopamine_defense_1/repositories/summary_repository.dart';
+import 'package:dopamine_defense_1/repositories/read_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:provider/provider.dart';
@@ -24,6 +29,8 @@ import 'package:supabase_flutter/supabase_flutter.dart' as sp;
 
 void main() async {
   await sp.Supabase.initialize(
+    authOptions:
+        sp.FlutterAuthClientOptions(authFlowType: sp.AuthFlowType.pkce),
     url: 'https://ebneycbqwtuhyxggghia.supabase.co',
     anonKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVibmV5Y2Jxd3R1aHl4Z2dnaGlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODkxNDA2NjgsImV4cCI6MjAwNDcxNjY2OH0.PT_lFBBhwbxI_fRl6HRu8BepdfBqI9j_rgShnJWYG8c',
@@ -31,6 +38,7 @@ void main() async {
 
   await dotenv.load(fileName: ".env");
   runApp(const MyApp());
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
 }
 
 final supabaseClient = sp.Supabase.instance.client;
@@ -73,10 +81,12 @@ class MyApp extends StatelessWidget {
         StateNotifierProvider<ReadListProvider, ReadListState>(
           create: (context) => ReadListProvider(),
         ),
+        StateNotifierProvider<TodayProvider, TodayState>(
+          create: (context) => TodayProvider(),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
         theme: ThemeData(
           scaffoldBackgroundColor: Colors.white,
           fontFamily: "Pretendard",
@@ -89,6 +99,8 @@ class MyApp extends StatelessWidget {
           SplashPage.routeName: (context) => const SplashPage(),
           LoginPage.routeName: (context) => const LoginPage(),
           MainPage.routeName: (context) => const MainPage(),
+          HomePage.routeName: (context) => const HomePage(),
+          LoadingPage.routeName: (context) => const LoadingPage(),
         },
       ),
     );

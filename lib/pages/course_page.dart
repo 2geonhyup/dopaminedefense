@@ -1,7 +1,7 @@
 import 'package:dopamine_defense_1/constants.dart';
 import 'package:dopamine_defense_1/functions.dart';
 import 'package:dopamine_defense_1/pages/select_page.dart';
-import 'package:dopamine_defense_1/pages/summary_page.dart';
+import 'package:dopamine_defense_1/pages/summary_page_record.dart';
 import 'package:dopamine_defense_1/providers/profile/profile_state.dart';
 import 'package:dopamine_defense_1/providers/read/read_state.dart';
 import 'package:dopamine_defense_1/repositories/defense_repository.dart';
@@ -83,7 +83,7 @@ class CourseCard extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => SummaryPage(
+                builder: (context) => SummaryPageRecord(
                       defense: defense,
                     )),
           );

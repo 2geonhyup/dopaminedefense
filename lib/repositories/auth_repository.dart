@@ -20,10 +20,10 @@ class AuthRepository {
     try {
       await supabaseClient.auth.signInWithOAuth(
         OAuthProvider.kakao,
-        redirectTo:
-            kIsWeb ? null : 'io.supabase.dopaminedefense1://login-callback/',
+        redirectTo: 'io.supabase.dopaminedefense://login-callback/',
       );
     } catch (e) {
+      print(e.toString());
       throw CustomError(
         code: 'Exception',
         message: e.toString(),

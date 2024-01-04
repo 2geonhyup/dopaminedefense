@@ -108,30 +108,27 @@ class _MainPageState extends State<MainPage> {
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
-        bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: '홈',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.school),
-              label: '코스',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: '설정',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          selectedItemColor: pointColor,
-          onTap: _onItemTapped,
-        ),
-        appBar: nameAppBar(),
-        body: isProfileCompleted(profileState: profileState)
-            ? _widgetOptions.elementAt(_selectedIndex)
-            : OnboardingPage(),
-      ),
+          bottomNavigationBar: BottomNavigationBar(
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: '홈',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.school),
+                label: '코스',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.settings),
+                label: '설정',
+              ),
+            ],
+            currentIndex: _selectedIndex,
+            selectedItemColor: pointColor,
+            onTap: _onItemTapped,
+          ),
+          // appBar: nameAppBar(),
+          body: _widgetOptions.elementAt(_selectedIndex)),
     );
   }
 }

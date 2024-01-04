@@ -1,7 +1,9 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../functions.dart';
 import '../models/custom_error.dart';
 import '../models/user.dart';
+import '../utils/supabase_manager.dart';
 
 class ProfileRepository {
   final SupabaseClient supabaseClient;
@@ -10,7 +12,15 @@ class ProfileRepository {
   });
 
   Future<UserModel> getProfile({required String id}) async {
-    print(supabaseClient.auth.currentUser!.email);
+    var manager = SupabaseManager(supabaseClient);
+    // 해당 값이 존재하지 않을 때만 insert
+    await manager.findAndInsertIfNotExists('ProfileData', id, {
+      'id': id,
+      'date': getCurrentDate(),
+      'grade': "모름",
+      "level": "모름",
+      "name": "모름"
+    });
     try {
       final profileData = await supabaseClient
           .from('ProfileData')

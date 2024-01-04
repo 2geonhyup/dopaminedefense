@@ -13,11 +13,12 @@ class DefenseRepository {
 
   Future<List<DefenseModel>> getCourse({required String course}) async {
     print(course);
+
     try {
       final List defenseData = await supabaseClient
           .from('AppDefenseData')
           .select()
-          .eq('course', course)
+          .eq('course', course == "모름" ? "고1 모의고사" : course)
           .order('day', ascending: true) as List;
       print(defenseData);
       List<DefenseModel> courseList = defenseData.map((defense) {
@@ -41,10 +42,6 @@ class DefenseRepository {
       final List defenseData = await supabaseClient
           .from('AppDefenseData')
           .select()
-          .eq(
-            'course',
-            course,
-          )
           .eq('day', day + 1) as List;
       //TODO: day에 해당하는 글 없을 때 처리하는 코드
       DefenseModel todayDefense = DefenseModel.fromDoc(defenseData[0]);
