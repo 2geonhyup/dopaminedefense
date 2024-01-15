@@ -9,7 +9,20 @@ String getCurrentDate() {
   return "$year-$month-$day";
 }
 
+String getKoreanWeekday(DateTime date) {
+  List<String> weekdays = ['월', '화', '수', '목', '금', '토', '일'];
+  return weekdays[date.weekday - 1];
+}
+
+String getDateWithWeekday() {
+  DateTime now = DateTime.now();
+  String formattedDate = '${now.month}월 ${now.day}일 (${getKoreanWeekday(now)})';
+  return formattedDate;
+}
+
 int getDateDifference(String startDate, String endDate) {
+  print(startDate);
+  print(endDate);
   DateTime start = DateTime.parse(startDate);
   DateTime end = DateTime.parse(endDate);
   Duration difference = end.difference(start);
@@ -45,4 +58,25 @@ dynamic safeParseJson(String inputStr) {
     String jsonString = inputStr.substring(firstCurly, lastCurly + 1);
     return jsonDecode(jsonString);
   }
+}
+
+List<String> splitStringEvenly(String text) {
+  List<String> words = text.split(' ');
+  String firstPart = '';
+  String secondPart = '';
+  int firstPartLength = 0;
+
+  // 전체 길이의 절반을 계산
+  int halfLength = text.replaceAll(' ', '').length ~/ 2;
+
+  for (var word in words) {
+    if ((firstPartLength + word.length) <= halfLength) {
+      firstPart = (firstPart.isEmpty) ? word : '$firstPart $word';
+      firstPartLength += word.length;
+    } else {
+      secondPart = (secondPart.isEmpty) ? word : '$secondPart $word';
+    }
+  }
+
+  return [firstPart, secondPart];
 }

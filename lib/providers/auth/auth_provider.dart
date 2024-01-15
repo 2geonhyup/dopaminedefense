@@ -12,7 +12,6 @@ class AuthProvider extends StateNotifier<AuthState> with LocatorMixin {
   @override
   void update(Locator watch) async {
     final authState = watch<sp.AuthState?>();
-    print(getCurrentDate());
     if (authState != null &&
         (authState.session != null ||
             authState.event == sp.AuthChangeEvent.signedIn)) {
@@ -20,16 +19,9 @@ class AuthProvider extends StateNotifier<AuthState> with LocatorMixin {
         authStatus: AuthStatus.authenticated,
         user: authState.session!.user,
       );
-      var manager = SupabaseManager(supabaseClient);
-      // 해당 값이 존재하지 않을 때만 insert
-      await manager.findAndInsertIfNotExists(
-          'ProfileData',
-          authState.session!.user.email!,
-          {'id': authState.session!.user.email!, 'date': getCurrentDate()});
     } else {
       state = state.copyWith(authStatus: AuthStatus.unauthenticated);
     }
-    print('authState: $state');
     super.update(watch);
   }
 

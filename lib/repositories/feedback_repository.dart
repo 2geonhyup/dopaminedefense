@@ -17,7 +17,7 @@ class FeedbackRepository {
       var summaryData = await supabaseClient
           .from('AppReadData')
           .select()
-          .eq('user_id', supabaseClient.auth.currentUser!.email)
+          .eq('user_id', supabaseClient.auth.currentUser!.email.toString())
           .eq('text_id', defenseId)
           .limit(1);
 

@@ -8,7 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../models/custom_error.dart';
 import '../../models/user.dart';
-import '../../repositories/summary_repository.dart';
+import '../../repositories/read_repository.dart';
 
 class ReadListProvider extends StateNotifier<ReadListState> with LocatorMixin {
   ReadListProvider() : super(ReadListState.initial());
@@ -23,7 +23,8 @@ class ReadListProvider extends StateNotifier<ReadListState> with LocatorMixin {
   Future<void> getRead({required String userId}) async {
     if (state != ReadListState.initial()) return; // 서버에서 처음가져올 때만 적용
     try {
-      final newReads = await read<ReadRepository>().getRead(userId: userId);
+      final newReads =
+          await read<ReadRepository>().getReadByUser(userId: userId);
       state = state.copyWith(reads: newReads);
     } catch (e) {
       rethrow;
@@ -36,39 +37,36 @@ class ReadListProvider extends StateNotifier<ReadListState> with LocatorMixin {
       required UserModel user,
       required int time,
       required DefenseModel defense}) async {
-    if (summary.length < 10) {
-      throw const CustomError(message: "요약은 10글자 이상이어야 합니다");
-    }
-
     final newRead = ReadModel(
         date: getCurrentDate(),
         time: time,
         length: defense.content.length,
         defenseId: defense.id,
         readStatus: ReadStatus.process,
-        feedback: FeedbackModel.initialFeedback());
-    final newReads = [...state.reads, newRead];
+        feedback: FeedbackModel.initialFeedback(),
+        score: 0,
+        summary: summary);
+    List<ReadModel> newReads = [...state.reads, newRead];
     state = state.copyWith(reads: newReads);
     try {
-      await read<ReadRepository>().sendSummary(
+      List result = await read<ReadRepository>().sendSummary(
           summary: summary, user: user, time: time, defense: defense);
 
-      final reads = state.reads.map((ReadModel read) {
-        if (read.defenseId == defense.id) {
-          return read.copyWith(readStatus: ReadStatus.end);
-        }
-        return read;
-      }).toList();
-      state = state.copyWith(reads: reads);
-      print(state);
+      ReadModel lastRead = newReads.removeLast();
+      newReads = [
+        ...newReads,
+        lastRead.copyWith(
+            readStatus: ReadStatus.end, feedback: result[1], score: result[0])
+      ];
+
+      state = state.copyWith(reads: newReads);
+      print(state.reads.last);
     } on CustomError catch (e) {
-      final reads = state.reads.map((ReadModel read) {
-        if (read.defenseId == defense.id) {
-          return read.copyWith(readStatus: ReadStatus.error);
-        }
-        return read;
-      }).toList();
-      state = state.copyWith(reads: reads);
+      ReadModel lastRead = newReads.removeLast();
+      newReads.add(lastRead.copyWith(
+        readStatus: ReadStatus.error,
+      ));
+      state = state.copyWith(reads: newReads, error: e);
     }
   }
 }

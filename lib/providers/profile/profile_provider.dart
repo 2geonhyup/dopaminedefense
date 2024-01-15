@@ -1,4 +1,5 @@
 // import 'package:flutter/foundation.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:state_notifier/state_notifier.dart';
 
 import '../../models/custom_error.dart';
@@ -6,7 +7,6 @@ import '../../models/user.dart';
 import '../../repositories/profile_repository.dart';
 import 'profile_state.dart';
 
-// class ProfileProvider with ChangeNotifier {
 class ProfileProvider extends StateNotifier<ProfileState> with LocatorMixin {
   ProfileProvider() : super(ProfileState.initial());
 
@@ -33,5 +33,11 @@ class ProfileProvider extends StateNotifier<ProfileState> with LocatorMixin {
       state = state.copyWith(profileStatus: ProfileStatus.error, error: e);
       print("profilestate:${state}");
     }
+  }
+
+  void setSubscribe() {
+    final UserModel user = state.user;
+    state = state.copyWith(user: user.copyWith(entitlementIsActive: true));
+    print(state.user);
   }
 }

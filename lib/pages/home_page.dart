@@ -2,65 +2,49 @@ import 'dart:async';
 
 import 'package:dopamine_defense_1/constants.dart';
 import 'package:dopamine_defense_1/functions.dart';
-import 'package:dopamine_defense_1/models/custom_error.dart';
-import 'package:dopamine_defense_1/models/defense.dart';
-import 'package:dopamine_defense_1/models/read.dart';
+import 'package:dopamine_defense_1/models/user.dart';
+import 'package:dopamine_defense_1/pages/ranking_page.dart';
+import 'package:dopamine_defense_1/pages/reading_page.dart';
+import 'package:dopamine_defense_1/pages/score_page.dart';
+import 'package:dopamine_defense_1/pages/subscribe_page.dart';
 import 'package:dopamine_defense_1/pages/summary_page.dart';
-import 'package:dopamine_defense_1/providers/profile/profile_state.dart';
-import 'package:dopamine_defense_1/providers/read/read_provider.dart';
-import 'package:dopamine_defense_1/providers/read/read_state.dart';
-import 'package:dopamine_defense_1/utils/error_dialog.dart';
+import 'package:dopamine_defense_1/pages/summary_page_record.dart';
+import 'package:dopamine_defense_1/pages/time_select_page.dart';
+import 'package:dopamine_defense_1/providers/today/today_provider.dart';
+import 'package:dopamine_defense_1/providers/today/today_state.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-import '../models/user.dart';
+import '../models/defense.dart';
+import '../models/read.dart';
+import '../providers/auth/auth_provider.dart';
+import '../providers/profile/profile_state.dart';
+import '../providers/read/read_provider.dart';
+import '../providers/read/read_state.dart';
 import '../repositories/defense_repository.dart';
+import '../utils/error_dialog.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
+
+  static const String routeName = 'home_page';
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  @override
-  Widget build(BuildContext context) {
-    ProfileState profileState = context.watch<ProfileState>();
-    return ListView(
-      children: [
-        SizedBox(
-          height: 40,
-        ),
-        TodayDefenseCard(),
-        ReadingAnalysisCard(user: profileState.user),
-        Divider(),
-        AttendanceCheckCard(user: profileState.user),
-      ],
-    );
-  }
-}
-
-class TodayDefenseCard extends StatefulWidget {
-  const TodayDefenseCard({Key? key}) : super(key: key);
-
-  @override
-  State<TodayDefenseCard> createState() => _TodayDefenseCardState();
-}
-
-class _TodayDefenseCardState extends State<TodayDefenseCard> {
-  DefenseModel? todayDefense;
   DateTime _lastCheckedDate = DateTime.now();
   Timer? _timer;
 
-  Future<void> _getTodayDefense() async {
-    todayDefense = await context.read<DefenseRepository>().getTodayDefense(
-        course: context.read<ProfileState>().user.level,
-        day: getDateDifference(
-            context.read<ProfileState>().user.date, getCurrentDate()));
-    print(todayDefense);
-    setState(() {});
-  }
+  late final TodayProvider todayProv;
+  late final void Function() _removeListener;
 
   void _checkDate() {
     DateTime now = DateTime.now();
@@ -68,321 +52,327 @@ class _TodayDefenseCardState extends State<TodayDefenseCard> {
     if (DateTime(now.year, now.month, now.day) !=
         DateTime(_lastCheckedDate.year, _lastCheckedDate.month,
             _lastCheckedDate.day)) {
-      _getTodayDefense();
+      print("new day");
+      _getToday();
     }
     _lastCheckedDate = now;
   }
 
+  // Future<void> customerInfo() async {
+  //   CustomerInfo customerInfo = await Purchases.getCustomerInfo();
+  //   print(customerInfo);
+  // }
+
+  void _getToday() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context
+          .read<TodayProvider>()
+          .getToday(user: context.read<ProfileState>().user);
+    });
+  }
+
+  void getRead() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context
+          .read<ReadListProvider>()
+          .getRead(userId: context.read<ProfileState>().user.id);
+    });
+  }
+
+  void errorDialogListener(TodayState state) {
+    if (state.todayStatus == TodayStatus.error) {
+      errorDialog(context, state.error);
+    }
+  }
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    _getTodayDefense();
+    // customerInfo();
+    todayProv = context.read<TodayProvider>();
+    _removeListener =
+        todayProv.addListener(errorDialogListener, fireImmediately: false);
     _timer = Timer.periodic(Duration(minutes: 1), (Timer t) => _checkDate());
+    _getToday();
+    getRead();
   }
 
   @override
   void dispose() {
     _timer?.cancel();
+    _removeListener();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15.0),
-      child: InkWell(
-        borderRadius: BorderRadius.all(Radius.circular(30)),
-        splashColor: Colors.blueGrey,
-        onTap: () {
-          todayDefense == null
-              ? null
-              : Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => SummaryPage(
-                            defense: todayDefense,
-                          )),
-                );
-        },
-        child: Container(
-          height: 250,
-          decoration: BoxDecoration(
-              color: backGrey,
-              borderRadius: BorderRadius.all(Radius.circular(30))),
-          child: todayDefense == null
-              ? SizedBox.shrink()
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(left: 22, top: 33),
-                      child: Text(
-                        "오늘의 디펜스 도전!",
-                        style: titleStyle,
-                      ),
-                    ),
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(left: 22, top: 15, right: 22),
-                      child: Text(
-                        todayDefense!.content,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(
-                        left: 22,
-                        right: 22,
-                        top: 18,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: createTagsFromArray(todayDefense!.tag),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 25,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+    final UserModel user = context.read<ProfileState>().user;
+    final todayState = context.watch<TodayState>();
+    DefenseModel todayDefense = todayState.todayDefense;
+    ReadModel todayRead = context.watch<ReadListState>().reads.lastWhere(
+        (element) => element.defenseId == todayDefense.id,
+        orElse: () => ReadModel.initial());
+    ReadStatus todayReadCheck = todayRead.readStatus;
+    if (todayState.todayStatus == TodayStatus.loading) {
+      return Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Scaffold(
+          backgroundColor: Colors.white,
+          body: Stack(
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  todayReadCheck == ReadStatus.end
+                      ? SizedBox(
+                          height: 30,
+                        )
+                      : SizedBox.shrink(),
+                  Center(
+                    child: Text(getDateWithWeekday(), style: informationStyle),
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  IntrinsicWidth(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Container(
-                          height: 45,
-                          width: 216,
-                          decoration: BoxDecoration(
-                              color: pointColor,
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(20),
-                                  bottomLeft: Radius.circular(20))),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(left: 20.0),
-                                child: Text(
-                                  "글읽기 시작",
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w400,
-                                      height: 1.2),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(right: 25.0),
-                                child: Image(
-                                  image: AssetImage('assets/images/arrow.png'),
-                                ),
-                              )
-                            ],
+                        Center(
+                          child: RichText(
+                            text: TextSpan(children: [
+                              TextSpan(text: "오늘의 ", style: titleStyle),
+                              TextSpan(
+                                  text: "디펜스",
+                                  style: titleStyle.copyWith(color: pointColor))
+                            ]),
                           ),
+                        ),
+                        Text(
+                          createTagString(todayDefense.tag),
+                          style: textStyle,
                         ),
                       ],
                     ),
+                  ),
+                  SizedBox(
+                    height: 60,
+                  ),
+                  SizedBox(
+                      width: 250,
+                      height: 250,
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          CircularProgressIndicator(
+                            strokeCap: StrokeCap.round,
+                            value:
+                                todayState.todayRate[DateTime.now().hour] / 100,
+                            backgroundColor: widgetGrey, // 배경색
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                pointColor), // 진행 색상
+                            strokeWidth: 20, // 두께
+                          ),
+                          Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "${todayState.todayRate[DateTime.now().hour]}%",
+                                  style: titleStyle.copyWith(height: 1.2),
+                                ),
+                                Text(
+                                  "가 읽었어요",
+                                  style: textStyle,
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
+                      )),
+                  SizedBox(
+                    height: 80,
+                  ),
+                  HomeNavigateButton(
+                      todayReadCheck: todayReadCheck,
+                      user: user,
+                      todayDefense: todayDefense),
+                  todayReadCheck == ReadStatus.end
+                      ? Padding(
+                          padding: const EdgeInsets.only(top: 10.0),
+                          child: TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => SummaryPage(
+                                              todayDefense: todayDefense,
+                                            )));
+                              },
+                              child: Text(
+                                "다시 읽기",
+                                style: informationStyle.copyWith(
+                                    shadows: [
+                                      Shadow(
+                                          color: fontGrey,
+                                          offset: Offset(0, -5))
+                                    ],
+                                    color: Colors.transparent,
+                                    fontSize: 20,
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: fontGrey),
+                              )),
+                        )
+                      : SizedBox.shrink(),
+                ],
+              ),
+              Positioned(
+                right: 30,
+                top: 40,
+                child: PopupMenuButton<String>(
+                  icon: Icon(
+                    Icons.menu,
+                    size: 30,
+                    color: fontGrey,
+                  ),
+                  onSelected: (String result) {
+                    // 선택한 옵션에 따라 동작 처리
+                  },
+                  itemBuilder: (BuildContext context) =>
+                      <PopupMenuEntry<String>>[
+                    PopupMenuItem<String>(
+                      onTap: () {
+                        context.read<AuthProvider>().signout();
+                      },
+                      value: '로그아웃',
+                      child: Text('로그아웃'),
+                    ),
+                    PopupMenuItem<String>(
+                      onTap: () async {
+                        final url =
+                            Uri.parse('http://pf.kakao.com/_zmTAG/chat');
+                        if (await canLaunchUrl(url)) {
+                          launchUrl(url, mode: LaunchMode.externalApplication);
+                        }
+                      },
+                      value: '문의하기',
+                      child: Text('문의하기'),
+                    ),
                   ],
                 ),
-        ),
-      ),
+              ),
+            ],
+          )),
     );
   }
 }
 
-List<Widget> createTagsFromArray(array) {
-  return array.map<Widget>((item) {
-    return TagCard(text: item);
-  }).toList();
-}
+class HomeNavigateButton extends StatelessWidget {
+  const HomeNavigateButton({
+    super.key,
+    required this.todayReadCheck,
+    required this.user,
+    required this.todayDefense,
+  });
 
-class TagCard extends StatelessWidget {
-  final String text;
-  const TagCard({Key? key, required this.text}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 5.0),
-      child: Container(
-        height: 22,
-        decoration: BoxDecoration(
-          color: pointColor.withOpacity(0.15),
-          borderRadius: BorderRadius.circular(30),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Center(
-            child: Text(
-              '#$text',
-              style: TextStyle(
-                  fontSize: 12, fontWeight: FontWeight.w500, color: pointColor),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class ReadingAnalysisCard extends StatefulWidget {
+  final ReadStatus todayReadCheck;
   final UserModel user;
-  const ReadingAnalysisCard({Key? key, required this.user}) : super(key: key);
-
-  @override
-  State<ReadingAnalysisCard> createState() => _ReadingAnalysisCardState();
-}
-
-class _ReadingAnalysisCardState extends State<ReadingAnalysisCard> {
-  void getRead() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ReadListProvider>().getRead(userId: widget.user.id);
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    getRead();
-  }
+  final DefenseModel todayDefense;
 
   @override
   Widget build(BuildContext context) {
-    List<ReadModel> reads = context.watch<ReadListState>().reads;
-    int totalLength = reads.fold(0, (previousValue, element) {
-      return previousValue + element.length;
-    });
-    int totalTime = reads.fold(0, (previousValue, element) {
-      return previousValue + element.time;
-    });
+    return SizedBox(
+      width: 280,
+      height: 80,
+      child: TextButton(
+        onPressed: () {
+          if (todayReadCheck == ReadStatus.process) {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ScorePage(
+                          todayDefense: todayDefense,
+                        )));
+            return;
+          }
 
-    return Padding(
-      padding: const EdgeInsets.only(top: 30.0, left: 25, bottom: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "읽기 분석",
-            style: titleStyle,
-          ),
-          SizedBox(
-            height: 15,
-          ),
-          Text("읽은 글자: $totalLength자"),
-          SizedBox(
-            height: 5,
-          ),
-          Text("읽은 시간: $totalTime초"),
-          SizedBox(
-            height: 5,
-          ),
-          Text("평균 속도: ${totalTime == 0 ? 0 : totalLength ~/ totalTime}자 (초당)"),
-        ],
-      ),
-    );
-  }
-}
-
-class AttendanceCheckCard extends StatefulWidget {
-  final UserModel user;
-  const AttendanceCheckCard({Key? key, required this.user}) : super(key: key);
-
-  @override
-  State<AttendanceCheckCard> createState() => _AttendanceCheckCardState();
-}
-
-class _AttendanceCheckCardState extends State<AttendanceCheckCard> {
-  void getRead() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ReadListProvider>().getRead(userId: widget.user.id);
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    getRead();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    print(getWeeklyParticipation(context.watch<ReadListState>().reads));
-    return Padding(
-      padding: const EdgeInsets.only(top: 20.0, left: 25, right: 25),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "출석 체크",
-            style: titleStyle,
-          ),
-          SizedBox(
-            height: 15,
-          ),
-          Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: createIconList(
-                getWeeklyParticipation(context.watch<ReadListState>().reads)),
-          )
-        ],
-      ),
-    );
-  }
-}
-
-Map<String, bool> getWeeklyParticipation(List<ReadModel> data) {
-  var now = DateTime.now();
-  var oneWeekAgo = now.subtract(Duration(days: now.weekday - 1));
-
-  Map<String, bool> weeklyParticipation = {
-    '월': false,
-    '화': false,
-    '수': false,
-    '목': false,
-    '금': false,
-    '토': false,
-    '일': false
-  };
-
-  for (ReadModel read in data) {
-    DateTime date = DateTime.parse(read.date.substring(0, 10));
-    if (date.isAfter(oneWeekAgo) && date.isBefore(now)) {
-      String dayOfWeek = _getDayOfWeek(date);
-      weeklyParticipation[dayOfWeek] = true;
-    }
-  }
-
-  return weeklyParticipation;
-}
-
-String _getDayOfWeek(DateTime date) {
-  List<String> days = ['월', '화', '수', '목', '금', '토', '일'];
-  return days[date.weekday - 1];
-}
-
-List<Widget> createIconList(Map<String, bool> weekParticipation) {
-  return weekParticipation.entries.map((entry) {
-    return Container(
-        width: 45,
-        height: 45,
-        decoration: BoxDecoration(
-          color: entry.value ? pointColor.withOpacity(0.7) : backGrey,
-          shape: BoxShape.circle,
-        ),
-        child: entry.value
-            ? Center(
-                child: Icon(
-                  Icons.check_rounded,
-                  size: 30,
-                  color: Colors.white,
+          if (user.trial &&
+              !user.entitlementIsActive &&
+              todayReadCheck == ReadStatus.initial) {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        SubscribePage())); // 어제했는데 구독 안하고 오늘 것 안 읽은 경우
+          } else if (todayReadCheck == ReadStatus.initial) {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => SummaryPage(
+                          todayDefense: todayDefense,
+                        ))); // 오늘 아직 참여안한경우(구독자든 비구독자든)
+          } else {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ScorePage(
+                          todayDefense: todayDefense,
+                        ))); // 오늘 참여한 경우
+          }
+        },
+        child: Row(
+          children: [
+            todayReadCheck == ReadStatus.end
+                ? SizedBox.shrink()
+                : SizedBox(
+                    width: 28,
+                  ),
+            Expanded(
+              child: Center(
+                child: Text(
+                  todayReadCheck == ReadStatus.process
+                      ? "채점 중..."
+                      : todayReadCheck == ReadStatus.end
+                          ? "결과 보기"
+                          : "시작하기",
+                  style: buttonTextStyle,
                 ),
-              )
-            : Center(
-                child: Text(entry.key,
-                    style: TextStyle(
-                        color: fontGrey,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700))));
-  }).toList();
+              ),
+            ),
+            todayReadCheck == ReadStatus.end
+                ? SizedBox.shrink()
+                : Icon(
+                    Icons.arrow_forward_ios,
+                    size: 25,
+                  ),
+          ],
+        ),
+        style: TextButton.styleFrom(
+            backgroundColor: pointColor,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30))),
+      ),
+    );
+  }
+}
+
+String createTagString(List tags) {
+  String combinedString = '';
+  for (String str in tags) {
+    combinedString += ('# $str '); // 공백을 추가하여 문자열을 연결
+  }
+
+  combinedString = combinedString.trim(); // 마지막 공백 제거
+  return combinedString;
 }

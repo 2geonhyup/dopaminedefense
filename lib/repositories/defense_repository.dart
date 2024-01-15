@@ -13,11 +13,12 @@ class DefenseRepository {
 
   Future<List<DefenseModel>> getCourse({required String course}) async {
     print(course);
+
     try {
       final List defenseData = await supabaseClient
           .from('AppDefenseData')
           .select()
-          .eq('course', course)
+          .eq('course', course == "모름" ? "고1 모의고사" : course)
           .order('day', ascending: true) as List;
       print(defenseData);
       List<DefenseModel> courseList = defenseData.map((defense) {
@@ -41,14 +42,29 @@ class DefenseRepository {
       final List defenseData = await supabaseClient
           .from('AppDefenseData')
           .select()
-          .eq(
-            'course',
-            course,
-          )
           .eq('day', day + 1) as List;
       //TODO: day에 해당하는 글 없을 때 처리하는 코드
       DefenseModel todayDefense = DefenseModel.fromDoc(defenseData[0]);
       return todayDefense;
+    } catch (e) {
+      throw CustomError(
+        code: 'Exception',
+        message: e.toString(),
+        plugin: 'flutter_error/server_error',
+      );
+    }
+  }
+
+  Future<List<int>> getTodayRate({required String day}) async {
+    print(day);
+    try {
+      final List readRateData = await supabaseClient
+          .from('AppReadRate')
+          .select()
+          .eq('day', DateTime.parse(day)) as List;
+      print(readRateData);
+      List<dynamic> readRate = readRateData[0]["rate"];
+      return readRate.map((item) => int.parse(item.toString())).toList();
     } catch (e) {
       throw CustomError(
         code: 'Exception',
