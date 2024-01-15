@@ -98,21 +98,6 @@ class ReadingPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 30,
-                ),
-                Center(
-                  child: NavigateButton(
-                      onPressed: () {
-                        Navigator.of(context).push(_createRoute());
-                      },
-                      text: "요약하기",
-                      foregroundColor: Colors.white,
-                      backgroundColor: black1),
-                ),
-                SizedBox(
-                  height: 26,
-                ),
               ],
             ),
           ],

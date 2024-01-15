@@ -54,4 +54,23 @@ class DefenseRepository {
       );
     }
   }
+
+  Future<List<int>> getTodayRate({required String day}) async {
+    print(day);
+    try {
+      final List readRateData = await supabaseClient
+          .from('AppReadRate')
+          .select()
+          .eq('day', DateTime.parse(day)) as List;
+      print(readRateData);
+      List<dynamic> readRate = readRateData[0]["rate"];
+      return readRate.map((item) => int.parse(item.toString())).toList();
+    } catch (e) {
+      throw CustomError(
+        code: 'Exception',
+        message: e.toString(),
+        plugin: 'flutter_error/server_error',
+      );
+    }
+  }
 }

@@ -1,5 +1,7 @@
 import 'package:dopamine_defense_1/pages/login_page.dart';
 import 'package:dopamine_defense_1/pages/main_page.dart';
+import 'package:dopamine_defense_1/pages/subscribe_page.dart';
+import 'package:dopamine_defense_1/pages/time_select_page.dart';
 import 'package:flutter/material.dart';
 import 'package:dopamine_defense_1/main.dart';
 import 'package:provider/provider.dart';
@@ -33,10 +35,11 @@ class _LoadingPageState extends State<LoadingPage> {
   }
 
   void _getProfile() {
-    final String uid = supabaseClient.auth.currentUser!.email!;
+    final String uid = context.read<AuthState>().user!.email!;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ProfileProvider>().getProfile(uid: uid);
     });
+
     print("로딩에서 getprofile함!");
   }
 

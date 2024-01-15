@@ -89,7 +89,7 @@ class _SummaryPageState extends State<SummaryPage> {
                             children: [
                               Padding(
                                 padding: const EdgeInsets.only(
-                                    left: 10.0, top: 90, right: 10),
+                                    left: 10.0, top: 80, right: 10),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -97,9 +97,16 @@ class _SummaryPageState extends State<SummaryPage> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text(
-                                          "간단히 요약해보세요.",
-                                          style: subTitleStyle,
+                                        RichText(
+                                          text: TextSpan(children: [
+                                            TextSpan(
+                                                text: "오늘의 ",
+                                                style: subTitleStyle),
+                                            TextSpan(
+                                                text: "디펜스",
+                                                style: subTitleStyle.copyWith(
+                                                    color: pointColor))
+                                          ]),
                                         ),
                                         TimerWidget(
                                           sec: _sec,
@@ -112,7 +119,7 @@ class _SummaryPageState extends State<SummaryPage> {
                                 ),
                               ),
                               SizedBox(
-                                height: 19,
+                                height: 25,
                               ),
                               Container(
                                 padding: EdgeInsets.all(15),
@@ -150,7 +157,7 @@ class _SummaryPageState extends State<SummaryPage> {
                               maxLength: 200,
                               decoration: InputDecoration(
                                 counterStyle: textStyle.copyWith(fontSize: 15),
-                                hintText: '여기에 요약을 작성하세요.',
+                                hintText: '원문의 핵심을 간단히 요약해주세요.',
                                 hintStyle: textStyle, // 힌트 텍스트 색상
                                 border: InputBorder.none, // 테두리 제거
                               ),

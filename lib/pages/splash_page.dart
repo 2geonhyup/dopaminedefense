@@ -26,6 +26,7 @@ class _SplashPageState extends State<SplashPage> {
       // build 내에서 네비게이션을 하기 때문에, safe한 동작을 위해 addpostframecallback을 사용
       // 이렇게 하면, 현재 build 작업이 끝난 후에 해당 동작을 실행할 수 있음
       WidgetsBinding.instance.addPostFrameCallback((_) {
+        print("1");
         Navigator.pushNamed(context, LoadingPage.routeName);
       });
     } else if (authState.authStatus == AuthStatus.unauthenticated) {

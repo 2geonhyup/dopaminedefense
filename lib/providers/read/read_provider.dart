@@ -44,32 +44,29 @@ class ReadListProvider extends StateNotifier<ReadListState> with LocatorMixin {
         defenseId: defense.id,
         readStatus: ReadStatus.process,
         feedback: FeedbackModel.initialFeedback(),
-        score: 0);
-    final newReads = [...state.reads, newRead];
+        score: 0,
+        summary: summary);
+    List<ReadModel> newReads = [...state.reads, newRead];
     state = state.copyWith(reads: newReads);
     try {
       List result = await read<ReadRepository>().sendSummary(
           summary: summary, user: user, time: time, defense: defense);
 
-      final reads = state.reads.map((ReadModel read) {
-        if (read.defenseId == defense.id) {
-          return read.copyWith(
-              readStatus: ReadStatus.end,
-              feedback: result[1],
-              score: result[0]);
-        }
-        return read;
-      }).toList();
-      state = state.copyWith(reads: reads);
-      print(state);
+      ReadModel lastRead = newReads.removeLast();
+      newReads = [
+        ...newReads,
+        lastRead.copyWith(
+            readStatus: ReadStatus.end, feedback: result[1], score: result[0])
+      ];
+
+      state = state.copyWith(reads: newReads);
+      print(state.reads.last);
     } on CustomError catch (e) {
-      final reads = state.reads.map((ReadModel read) {
-        if (read.defenseId == defense.id) {
-          return read.copyWith(readStatus: ReadStatus.error);
-        }
-        return read;
-      }).toList();
-      state = state.copyWith(reads: reads);
+      ReadModel lastRead = newReads.removeLast();
+      newReads.add(lastRead.copyWith(
+        readStatus: ReadStatus.error,
+      ));
+      state = state.copyWith(reads: newReads, error: e);
     }
   }
 }

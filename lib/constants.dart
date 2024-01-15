@@ -35,3 +35,5 @@ TextStyle textStyle = TextStyle(
     fontWeight: FontWeight.w300,
     color: fontGrey,
     fontFamily: 'Pretendard');
+
+const entitlementID = 'premium';

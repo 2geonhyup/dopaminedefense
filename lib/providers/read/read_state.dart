@@ -5,24 +5,27 @@ import '../../models/read.dart';
 
 class ReadListState extends Equatable {
   final List<ReadModel> reads;
+  final CustomError error;
 
-  ReadListState({required this.reads});
+  ReadListState({required this.reads, required this.error});
 
   factory ReadListState.initial() {
-    return ReadListState(reads: []);
+    return ReadListState(reads: [], error: CustomError());
   }
 
   @override
-  List<Object> get props => [reads];
+  List<Object> get props => [reads, error];
 
   @override
   bool get stringify => true;
 
   ReadListState copyWith({
     List<ReadModel>? reads,
+    CustomError? error,
   }) {
     return ReadListState(
       reads: reads ?? this.reads,
+      error: error ?? this.error,
     );
   }
 }

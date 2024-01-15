@@ -21,6 +21,8 @@ String getDateWithWeekday() {
 }
 
 int getDateDifference(String startDate, String endDate) {
+  print(startDate);
+  print(endDate);
   DateTime start = DateTime.parse(startDate);
   DateTime end = DateTime.parse(endDate);
   Duration difference = end.difference(start);

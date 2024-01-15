@@ -1,14 +1,16 @@
+import 'package:dart_openai/dart_openai.dart';
 import 'package:dopamine_defense_1/functions.dart';
 import 'package:dopamine_defense_1/models/custom_error.dart';
 import 'package:dopamine_defense_1/models/defense.dart';
 import 'package:dopamine_defense_1/models/feedback.dart';
 import 'package:dopamine_defense_1/prompt.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:dart_openai/openai.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../models/read.dart';
 import '../models/user.dart';
+import 'package:ml_linalg/linalg.dart';
 
 class ReadRepository {
   final SupabaseClient supabaseClient;
@@ -60,7 +62,8 @@ class ReadRepository {
     // 채점부 코드
     OpenAI.apiKey = dotenv.get('OPEN_AI_KEY');
     var parsedFeedback; //피드백
-    int? score;
+    int? promptScore;
+    int? embeddingScore;
 
     final systemMessage = const OpenAIChatCompletionChoiceMessageModel(
       content: summarySystemPrompt,
@@ -89,6 +92,28 @@ class ReadRepository {
           safeParseJson(chatCompletion.choices.first.message.content);
 
       try {
+        final OpenAIEmbeddingsModel summaryEmbeddingData = await OpenAI
+            .instance.embedding
+            .create(model: "text-embedding-ada-002", input: summary);
+        final OpenAIEmbeddingsModel textEmbeddingData = await OpenAI
+            .instance.embedding
+            .create(model: "text-embedding-ada-002", input: defense.content);
+        print(summaryEmbeddingData.data[0].embeddings);
+        final vector1 =
+            Vector.fromList(summaryEmbeddingData.data[0].embeddings);
+        final vector2 = Vector.fromList(textEmbeddingData.data[0].embeddings);
+        embeddingScore =
+            (vector1.distanceTo(vector2, distance: Distance.cosine) * 700)
+                .ceil();
+      } catch (e) {
+        throw CustomError(
+          code: 'Exception',
+          message: e.toString(),
+          plugin: 'flutter_error/server_error',
+        );
+      }
+
+      try {
         final scoreCompletion = await OpenAI.instance.chat.create(
           model: "gpt-3.5-turbo",
           messages: [
@@ -103,8 +128,9 @@ class ReadRepository {
           ],
           temperature: 0,
         );
-        var responseData = scoreCompletion.choices.first.message.content;
-        score = allToInt(responseData);
+        var responseData =
+            safeParseJson(scoreCompletion.choices.first.message.content);
+        promptScore = allToInt(responseData["score"]) * 3;
       } catch (e) {
         throw CustomError(
           code: 'Exception',
@@ -122,6 +148,8 @@ class ReadRepository {
 
     //제출부 코드
     try {
+      print(promptScore);
+      print(embeddingScore);
       await supabaseClient.from('AppReadData').insert({
         'user_id': user.id,
         'name': user.name,
@@ -130,9 +158,12 @@ class ReadRepository {
         'time': time,
         'text_id': defense.id,
         'length': defense.content.length,
-        "score": score,
+        "score": promptScore + embeddingScore,
       });
-      return [score, FeedbackModel.fromJson(parsedFeedback)];
+      return [
+        promptScore + embeddingScore,
+        FeedbackModel.fromJson(parsedFeedback)
+      ];
     } catch (e) {
       print(e.toString());
       throw CustomError(
@@ -145,6 +176,7 @@ class ReadRepository {
 }
 
 int allToInt(var input) {
+  print('alltoint$input');
   if (input is String) {
     var number = double.tryParse(input);
     if (number != null) {

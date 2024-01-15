@@ -17,24 +17,27 @@ class TodayState extends Equatable {
   final CustomError error;
   final List<ReadModel> todayRead;
   final DefenseModel todayDefense;
+  final List<int> todayRate;
 
-  const TodayState({
-    required this.todayStatus,
-    required this.error,
-    required this.todayRead,
-    required this.todayDefense,
-  });
+  const TodayState(
+      {required this.todayStatus,
+      required this.error,
+      required this.todayRead,
+      required this.todayDefense,
+      required this.todayRate});
 
   factory TodayState.initial() {
     return TodayState(
         todayStatus: TodayStatus.initial,
         error: CustomError(),
         todayRead: [],
-        todayDefense: DefenseModel.initial());
+        todayDefense: DefenseModel.initial(),
+        todayRate: []);
   }
 
   @override
-  List<Object> get props => [todayStatus, error, todayRead, todayDefense];
+  List<Object> get props =>
+      [todayStatus, error, todayRead, todayDefense, todayRate];
 
   @override
   bool get stringify => true;
@@ -44,12 +47,14 @@ class TodayState extends Equatable {
     CustomError? error,
     List<ReadModel>? todayRead,
     DefenseModel? todayDefense,
+    List<int>? todayRate,
   }) {
     return TodayState(
       todayStatus: todayStatus ?? this.todayStatus,
       error: error ?? this.error,
       todayRead: todayRead ?? this.todayRead,
       todayDefense: todayDefense ?? this.todayDefense,
+      todayRate: todayRate ?? this.todayRate,
     );
   }
 }
