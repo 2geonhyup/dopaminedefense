@@ -101,10 +101,13 @@ class _SubscribeViewState extends State<SubscribeView> {
         children: [
           Center(
             child: Text(
-              "상품 정보 준비중...",
+              "구독 정보 준비중...",
               style: informationStyle,
               textAlign: TextAlign.center,
             ),
+          ),
+          SizedBox(
+            height: 15,
           ),
           Center(child: CircularProgressIndicator()),
         ],
