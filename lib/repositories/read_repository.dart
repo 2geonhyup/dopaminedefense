@@ -35,6 +35,18 @@ class ReadRepository {
     }
   }
 
+  Future<void> removeReadByUser({required String userId}) async {
+    try {
+      await supabaseClient.from('AppReadData').delete().eq('user_id', userId);
+    } catch (e) {
+      throw CustomError(
+        code: 'Exception',
+        message: e.toString(),
+        plugin: 'flutter_error/server_error',
+      );
+    }
+  }
+
   Future<List<ReadModel>> getReadByDefense({required int defenseId}) async {
     try {
       final data = await supabaseClient

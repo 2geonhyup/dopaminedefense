@@ -2,14 +2,16 @@ import 'dart:async';
 
 import 'package:dopamine_defense_1/constants.dart';
 import 'package:dopamine_defense_1/functions.dart';
+import 'package:dopamine_defense_1/main.dart';
 import 'package:dopamine_defense_1/models/user.dart';
 import 'package:dopamine_defense_1/pages/ranking_page.dart';
 import 'package:dopamine_defense_1/pages/reading_page.dart';
 import 'package:dopamine_defense_1/pages/score_page.dart';
 import 'package:dopamine_defense_1/pages/subscribe_page.dart';
 import 'package:dopamine_defense_1/pages/summary_page.dart';
-import 'package:dopamine_defense_1/pages/summary_page_record.dart';
+
 import 'package:dopamine_defense_1/pages/time_select_page.dart';
+import 'package:dopamine_defense_1/providers/profile/profile_provider.dart';
 import 'package:dopamine_defense_1/providers/today/today_provider.dart';
 import 'package:dopamine_defense_1/providers/today/today_state.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -113,6 +115,7 @@ class _HomePageState extends State<HomePage> {
         (element) => element.defenseId == todayDefense.id,
         orElse: () => ReadModel.initial());
     ReadStatus todayReadCheck = todayRead.readStatus;
+    print(todayRead);
     if (todayState.todayStatus == TodayStatus.loading) {
       return Scaffold(
         backgroundColor: Colors.white,
@@ -267,6 +270,20 @@ class _HomePageState extends State<HomePage> {
                       },
                       value: '문의하기',
                       child: Text('문의하기'),
+                    ),
+                    PopupMenuItem<String>(
+                      onTap: () async {
+                        print(supabaseClient.auth.currentUser!.id);
+                        await context
+                            .read<ProfileProvider>()
+                            .removeProfile(user: user);
+                        await context
+                            .read<ReadListProvider>()
+                            .removeRead(userId: user.id);
+                        context.read<AuthProvider>().signout();
+                      },
+                      value: '계정 삭제',
+                      child: Text('계정 삭제'),
                     ),
                   ],
                 ),

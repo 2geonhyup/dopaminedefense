@@ -1,12 +1,8 @@
 import 'package:dopamine_defense_1/constants.dart';
-import 'package:dopamine_defense_1/pages/feedback_page.dart';
 import 'package:dopamine_defense_1/pages/home_page.dart';
 import 'package:dopamine_defense_1/pages/loading_page.dart';
 import 'package:dopamine_defense_1/pages/login_page.dart';
-import 'package:dopamine_defense_1/pages/main_page.dart';
-import 'package:dopamine_defense_1/pages/ranking_page.dart';
 import 'package:dopamine_defense_1/pages/splash_page.dart';
-import 'package:dopamine_defense_1/pages/summary_page_record.dart';
 import 'package:dopamine_defense_1/providers/auth/auth_provider.dart';
 import 'package:dopamine_defense_1/providers/auth/auth_state.dart';
 import 'package:dopamine_defense_1/providers/profile/profile_provider.dart';
@@ -122,14 +118,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-// Future<void> _configureSDK() async {
-//   // Enable debug logs before calling `configure`.
-//   await Purchases.setLogLevel(LogLevel.debug);
-//   PurchasesConfiguration configuration;
-//   configuration = PurchasesConfiguration(StoreConfig.instance.apiKey)
-//     ..appUserID = null
-//     ..observerMode = false;
-//
-//   await Purchases.configure(configuration);
-// }

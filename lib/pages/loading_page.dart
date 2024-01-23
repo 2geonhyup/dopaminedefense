@@ -1,5 +1,4 @@
 import 'package:dopamine_defense_1/pages/login_page.dart';
-import 'package:dopamine_defense_1/pages/main_page.dart';
 import 'package:dopamine_defense_1/pages/subscribe_page.dart';
 import 'package:dopamine_defense_1/pages/time_select_page.dart';
 import 'package:flutter/material.dart';

@@ -76,4 +76,12 @@ class AuthRepository {
   Future<void> signOut() async {
     await supabaseClient.auth.signOut();
   }
+
+  Future<void> deleteUser() async {
+    try {
+      await supabaseClient.auth.signOut();
+    } catch (e) {
+      print(e.toString());
+    }
+  }
 }

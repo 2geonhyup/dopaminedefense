@@ -40,4 +40,16 @@ class ProfileProvider extends StateNotifier<ProfileState> with LocatorMixin {
     state = state.copyWith(user: user.copyWith(entitlementIsActive: true));
     print(state.user);
   }
+
+  Future<void> removeProfile({required UserModel user}) async {
+    state = state.copyWith(profileStatus: ProfileStatus.loading);
+    try {
+      await read<ProfileRepository>().removeProfile(user: user);
+      state = ProfileState.initial();
+      print("profilestate:${state}");
+    } on CustomError catch (e) {
+      state = state.copyWith(profileStatus: ProfileStatus.error, error: e);
+      print("profilestate:${state}");
+    }
+  }
 }

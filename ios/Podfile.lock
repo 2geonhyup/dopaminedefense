@@ -2,9 +2,6 @@ PODS:
   - app_links (0.0.1):
     - Flutter
   - Flutter (1.0.0)
-  - in_app_purchase_storekit (0.0.1):
-    - Flutter
-    - FlutterMacOS
   - onesignal_flutter (5.0.4):
     - Flutter
     - OneSignalXCFramework (= 5.0.4)
@@ -69,7 +66,6 @@ PODS:
 DEPENDENCIES:
   - app_links (from `.symlinks/plugins/app_links/ios`)
   - Flutter (from `Flutter`)
-  - in_app_purchase_storekit (from `.symlinks/plugins/in_app_purchase_storekit/darwin`)
   - onesignal_flutter (from `.symlinks/plugins/onesignal_flutter/ios`)
   - OneSignalXCFramework (< 6.0, >= 5.0.0)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
@@ -89,8 +85,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/app_links/ios"
   Flutter:
     :path: Flutter
-  in_app_purchase_storekit:
-    :path: ".symlinks/plugins/in_app_purchase_storekit/darwin"
   onesignal_flutter:
     :path: ".symlinks/plugins/onesignal_flutter/ios"
   path_provider_foundation:
@@ -107,7 +101,6 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   app_links: 5ef33d0d295a89d9d16bb81b0e3b0d5f70d6c875
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
-  in_app_purchase_storekit: 4fb7ee9e824b1f09107fbfbbce8c4b276366dc43
   onesignal_flutter: 2c2f01520fa953d93fad18162538cc98d6da009b
   OneSignalXCFramework: 7e0a6d68dda7e80b03069bd145232f480f8c2279
   path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943

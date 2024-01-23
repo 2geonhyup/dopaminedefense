@@ -1,5 +1,4 @@
 import 'package:dopamine_defense_1/pages/login_page.dart';
-import 'package:dopamine_defense_1/pages/main_page.dart';
 import 'package:flutter/material.dart';
 import 'package:dopamine_defense_1/main.dart';
 import 'package:provider/provider.dart';

@@ -102,4 +102,21 @@ class ProfileRepository {
       );
     }
   }
+
+  Future<void> removeProfile({required UserModel user}) async {
+    try {
+      var data = await supabaseClient
+          .from('ProfileData')
+          .delete()
+          .match({'id': user.id}).select();
+      print(data);
+    } catch (e) {
+      print(e.toString());
+      throw CustomError(
+        code: 'Exception',
+        message: e.toString(),
+        plugin: 'flutter_error/server_error',
+      );
+    }
+  }
 }

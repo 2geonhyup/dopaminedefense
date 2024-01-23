@@ -31,6 +31,15 @@ class ReadListProvider extends StateNotifier<ReadListState> with LocatorMixin {
     }
   }
 
+  Future<void> removeRead({required String userId}) async {
+    try {
+      await read<ReadRepository>().removeReadByUser(userId: userId);
+      state = ReadListState.initial();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   //제출 -> complete 바뀜
   Future<void> summarySubmit(
       {required String summary,
