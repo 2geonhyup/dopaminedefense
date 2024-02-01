@@ -4,7 +4,6 @@ import '../../models/custom_error.dart';
 import '../../models/user.dart';
 
 enum ProfileStatus {
-  initial,
   loading,
   loaded,
   error,
@@ -22,7 +21,7 @@ class ProfileState extends Equatable {
 
   factory ProfileState.initial() {
     return ProfileState(
-        profileStatus: ProfileStatus.initial,
+        profileStatus: ProfileStatus.loading,
         user: UserModel.initialUser(),
         error: CustomError());
   }

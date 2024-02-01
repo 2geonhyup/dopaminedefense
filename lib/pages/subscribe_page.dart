@@ -1,7 +1,11 @@
 import 'package:dopamine_defense_1/models/custom_error.dart';
+import 'package:dopamine_defense_1/pages/home_page.dart';
 import 'package:dopamine_defense_1/pages/loading_page.dart';
+import 'package:dopamine_defense_1/pages/subscribe_view.dart';
 import 'package:dopamine_defense_1/providers/profile/profile_provider.dart';
 import 'package:dopamine_defense_1/utils/error_dialog.dart';
+import 'package:dopamine_defense_1/utils/navigate_dialog.dart';
+import 'package:dopamine_defense_1/widgets/back_icon.dart';
 import 'package:dopamine_defense_1/widgets/navigate_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,48 +19,52 @@ import '../constants.dart';
 
 class SubscribePage extends StatefulWidget {
   const SubscribePage({Key? key}) : super(key: key);
+  static const String routeName = "subscribe_page";
 
   @override
   State<SubscribePage> createState() => _SubscribePageState();
 }
 
-enum SubscribeStatus { loading, loaded, complete, error, progress }
+enum SubscribeStatus {
+  loading, // 로딩중인 경우
+  success, // 상품목록을 정상적으로 받아온 경우
+  complete, // 화면 들어오기 전에 이미 구독한 경우
+  failure, // 상품 목록을 받아올 때, 에러가 발생한 경우
+}
 
 class _SubscribePageState extends State<SubscribePage> {
-  SubscribeStatus subscribeStatus = SubscribeStatus.loading;
   Offerings? offerings;
-  Future<void> performMagic() async {
+  late Future myFuture; // getofferings함수 initstate에서만 실행되게 함
+
+  Future<SubscribeStatus> getOfferings() async {
     CustomerInfo customerInfo = await Purchases.getCustomerInfo();
 
-    //이미 구독한 상태 -> 홈화면으로 가야 함
+    // 이미 구독 완료 한 경우
     if (customerInfo.entitlements.all[entitlementID] != null &&
         customerInfo.entitlements.all[entitlementID]?.isActive == true) {
-      // appData.currentData = WeatherData.generateData();
-      subscribeStatus = SubscribeStatus.complete;
-    } else {
+      // 홈으로 돌아가기
+      return SubscribeStatus.complete;
+    }
+    // 아직 구독 안한 경우
+    else {
       try {
+        // 상품 목록 받아오기
         offerings = await Purchases.getOfferings();
       } on PlatformException catch (e) {
-        subscribeStatus = SubscribeStatus.error;
-
-        errorDialog(context, CustomError(message: e.toString()));
+        print('상품 목록 로딩 실패${e.toString()}');
+        // 상품 목록 로딩 실패 - 홈으로 돌아가기 화면
+        return SubscribeStatus.failure;
       }
-
+      // 상품 목록 로딩 실패 (빈 경우)
       if (offerings == null || offerings?.current == null) {
-        // offerings are empty, show a message to your user
-
-        subscribeStatus = SubscribeStatus.error;
-
-        errorDialog(
-            context, CustomError(message: "구독 목록을 불러올 수 없습니다. 앱을 다시 실행해주세요."));
-      } else {
-        subscribeStatus = SubscribeStatus.loaded;
-
-        print(offerings!.current!);
+        // 상품 목록 로딩 실패 - 홈으로 돌아가기 화면
+        return SubscribeStatus.failure;
       }
-    }
-    if (mounted) {
-      setState(() {});
+      // 상품 목록 로딩 성공
+      else {
+        // 세팅하기
+        return SubscribeStatus.success;
+      }
     }
   }
 
@@ -64,205 +72,229 @@ class _SubscribePageState extends State<SubscribePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    performMagic();
+    myFuture = getOfferings();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: SubscribeView(
-            subscribeStatus: subscribeStatus, offerings: offerings));
+    // TODO: implement build
+    return FutureBuilder(
+        future: myFuture,
+        builder: (context, snapshot) {
+          Widget body;
+          // 로딩 중
+          if (!snapshot.hasData) {
+            body = Center(child: CircularProgressIndicator());
+          }
+          // 에러 발생
+          else if (snapshot.hasError ||
+              snapshot.data == SubscribeStatus.failure) {
+            body = Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "상품 목록 로딩에 실패했습니다. \n아래 버튼을 누르고 다시 시도해주세요!",
+                    style: regularGrey16,
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  IconButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, LoadingPage.routeName);
+                      },
+                      icon: Icon(
+                        Icons.replay_circle_filled,
+                        color: greyA,
+                        size: 50,
+                      ))
+                ],
+              ),
+            );
+          }
+          // 이미 구독함
+          else if (snapshot.data == SubscribeStatus.complete) {
+            body = Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "이미 상품 구독을 완료했습니다!\n아래 버튼을 통해 홈화면으로 돌아가주세요.",
+                    style: regularGrey16,
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  IconButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, LoadingPage.routeName);
+                      },
+                      icon: Icon(
+                        Icons.replay_circle_filled,
+                        color: greyA,
+                        size: 50,
+                      ))
+                ],
+              ),
+            );
+          }
+          // 정상적 로딩 완료
+          else {
+            body = OfferingView(
+              offering: offerings!.current!,
+            );
+          }
+          return Scaffold(
+            backgroundColor: Colors.white,
+            body: body,
+          );
+        });
   }
 }
 
-class SubscribeView extends StatefulWidget {
-  SubscribeStatus subscribeStatus;
-  final Offerings? offerings;
+class OfferingView extends StatefulWidget {
+  final Offering offering;
 
-  SubscribeView(
-      {Key? key, required this.subscribeStatus, required this.offerings})
-      : super(key: key);
+  OfferingView({Key? key, required this.offering}) : super(key: key);
 
   @override
-  State<SubscribeView> createState() => _SubscribeViewState();
+  State<OfferingView> createState() => _OfferingViewState();
 }
 
-class _SubscribeViewState extends State<SubscribeView> {
-  int selectedBox = 0;
+class _OfferingViewState extends State<OfferingView> {
+  int selected = 1; // 처음엔 3개월
 
   @override
   Widget build(BuildContext context) {
-    if (widget.subscribeStatus == SubscribeStatus.loading)
-      return Center(child: CircularProgressIndicator());
-    if (widget.subscribeStatus == SubscribeStatus.progress)
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Center(
-            child: Text(
-              "구독 정보 준비중...",
-              style: informationStyle,
-              textAlign: TextAlign.center,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 60,
+              ),
+              BackIcon(),
+              SizedBox(
+                height: 32,
+              ),
+              Image.asset(
+                "assets/images/subscribe-title.png",
+                width: 225,
+                height: 68,
+              ),
+              SizedBox(
+                height: 13,
+              ),
+              Text(
+                'AI채점과 피드백까지!',
+                style: regularGrey16,
+              ),
+              SizedBox(
+                height: 62,
+              ),
+              Text(
+                '멤버십',
+                style:
+                    mediumGrey3_16.copyWith(height: 1.42, letterSpacing: -0.17),
+              ),
+              SizedBox(
+                height: 4,
+              ),
+              Text(
+                "요금제를 선택한 후 3일간 무료체험 해보세요",
+                style: regularGrey14.copyWith(color: greyA),
+              ),
+              SizedBox(
+                height: 24,
+              ),
+              ListView.builder(
+                padding: EdgeInsets.zero,
+                itemCount: widget.offering.availablePackages.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return GestureDetector(
+                      onTap: () async {
+                        setState(() {
+                          selected = index;
+                        });
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Container(
+                          child: index == 0
+                              ? OneMonthCard(
+                                  selected: selected == 0,
+                                )
+                              : ThreeMonthCard(
+                                  selected: selected == index,
+                                ),
+                        ),
+                      ));
+                },
+                shrinkWrap: true,
+                reverse: true,
+                physics: const ClampingScrollPhysics(),
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 34.0),
+            child: NavigateButton(
+              onPressed: () async {
+                var myProductList = widget.offering.availablePackages;
+                print(myProductList[selected].storeProduct.title);
+                print(myProductList[selected].storeProduct.description);
+                print(myProductList[selected].storeProduct.priceString);
+                try {
+                  // 구매하기
+                  CustomerInfo customerInfo =
+                      await Purchases.purchasePackage(myProductList[selected]);
+                  // 구매 정보 가져오기
+                  EntitlementInfo? entitlement =
+                      customerInfo.entitlements.all[entitlementID];
+                  // 구독 성공
+                  if (entitlement != null && entitlement.isActive) {
+                    context.read<ProfileProvider>().setSubscribe();
+                    Navigator.pushNamed(context, HomePage.routeName);
+                  }
+                  //구독 실패
+                  else {
+                    errorDialog(
+                        context,
+                        CustomError(
+                            code: "알림", message: "구독이 정상적으로 완료되지 않았습니다."));
+                  }
+                }
+                //구독 실패
+                catch (e) {
+                  print("catch!!$e");
+                  errorDialog(
+                      context,
+                      CustomError(
+                          code: "알림", message: "구독이 정상적으로 완료되지 않았습니다."));
+                }
+              },
+              width: 342,
+              text: "3일간 무료체험 시작하기",
+              foregroundColor: orangePoint,
+              backgroundColor: black1,
+              icon: Icon(
+                Icons.arrow_forward,
+                size: 24,
+              ),
             ),
           ),
-          SizedBox(
-            height: 15,
-          ),
-          Center(child: CircularProgressIndicator()),
         ],
-      );
-    else if (widget.subscribeStatus == SubscribeStatus.error)
-      return Center(
-        child: Text(
-          "앱을 다시 실행해주세요.",
-          style: informationStyle,
-        ),
-      );
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          "매일 새로운 지문",
-          style: subTitleStyle.copyWith(color: pointColor),
-          textAlign: TextAlign.center,
-        ),
-        Text("AI채점과 피드백까지", style: subTitleStyle),
-        SizedBox(
-          height: 70,
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  selectedBox = 0;
-                });
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 30),
-                width: 300,
-                height: 80,
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(30),
-                    border: Border.all(
-                        color: selectedBox == 0 ? pointColor : fontGrey,
-                        width: 2)),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "1개월",
-                      style: informationStyle.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: selectedBox == 0 ? pointColor : fontGrey),
-                    ),
-                    Text(
-                      "월 ₩3,000",
-                      style: informationStyle.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: selectedBox == 0 ? pointColor : fontGrey),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  selectedBox = 1;
-                });
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 30),
-                width: 300,
-                height: 80,
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(30),
-                    border: Border.all(
-                        color: selectedBox == 1 ? pointColor : fontGrey,
-                        width: 2)),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "3개월",
-                      style: informationStyle.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: selectedBox == 1 ? pointColor : fontGrey),
-                    ),
-                    Text(
-                      "월 ₩2,000",
-                      style: informationStyle.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: selectedBox == 1 ? pointColor : fontGrey),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 70,
-            ),
-            Center(
-              child: NavigateButton(
-                  onPressed: () async {
-                    if (widget.subscribeStatus == SubscribeStatus.progress)
-                      return;
-                    setState(() {
-                      widget.subscribeStatus = SubscribeStatus.progress;
-                    });
-                    var myProductList =
-                        widget.offerings!.current!.availablePackages;
-                    print(myProductList);
-                    try {
-                      CustomerInfo customerInfo =
-                          await Purchases.purchasePackage(
-                              myProductList[selectedBox]);
-                      EntitlementInfo? entitlement =
-                          customerInfo.entitlements.all[entitlementID];
-                      print(entitlement);
-
-                      if (entitlement != null && entitlement.isActive) {
-                        print("subscribe");
-                        context.read<ProfileProvider>().setSubscribe();
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => LoadingPage()));
-                      }
-                      setState(() {
-                        widget.subscribeStatus = SubscribeStatus.complete;
-                      });
-                    } catch (e) {
-                      final error = e as PlatformException;
-                      print(error.code);
-                      if (int.parse(error.code) != 1) {
-                        errorDialog(
-                            context,
-                            CustomError(
-                                code: '구독 실패', message: error.message ?? ''));
-                      }
-                      setState(() {
-                        widget.subscribeStatus = SubscribeStatus.loaded;
-                      });
-                    }
-                  },
-                  width: 345,
-                  text: "3일간 무료체험 시작하기",
-                  foregroundColor: Colors.white,
-                  backgroundColor: pointColor),
-            )
-          ],
-        )
-      ],
+      ),
     );
   }
 }

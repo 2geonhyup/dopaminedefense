@@ -1,150 +1,255 @@
+import 'package:dopamine_defense_1/pages/home_page.dart';
 import 'package:dopamine_defense_1/pages/subscribe_page.dart';
-import 'package:dopamine_defense_1/pages/summary_page.dart';
-import 'package:dopamine_defense_1/pages/time_select_page.dart';
-import 'package:dopamine_defense_1/providers/profile/profile_provider.dart';
-import 'package:dopamine_defense_1/providers/today/today_provider.dart';
 import 'package:dopamine_defense_1/widgets/navigate_button.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../constants.dart';
+import '../functions.dart';
 import '../models/read.dart';
-import '../models/user.dart';
 import '../providers/profile/profile_state.dart';
-import '../providers/today/today_state.dart';
-import '../utils/error_dialog.dart';
-import 'loading_page.dart';
+import '../providers/today/today_provider.dart';
+
+final List<Color> _pointColors = [orangePoint, greenPoint, purplePoint];
 
 class RankingPage extends StatefulWidget {
-  final ReadModel myRead;
-  const RankingPage({Key? key, required this.myRead}) : super(key: key);
+  static const routeName = '/ranking';
+
+  const RankingPage({Key? key}) : super(key: key);
 
   @override
-  State<RankingPage> createState() => _RankingPageState();
+  State<RankingPage> createState() => _FeedbackPageState();
 }
 
-class _RankingPageState extends State<RankingPage> {
-  late final TodayProvider todayProv;
-  late final void Function() _removeListener;
-  void _getToday() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context
-          .read<TodayProvider>()
-          .getToday(user: context.read<ProfileState>().user);
-    });
-  }
-
-  void errorDialogListener(TodayState state) {
-    if (state.todayStatus == TodayStatus.error) {
-      errorDialog(context, state.error);
-    }
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    todayProv = context.read<TodayProvider>();
-    _removeListener =
-        todayProv.addListener(errorDialogListener, fireImmediately: false);
-    _getToday();
-  }
-
-  @override
-  void dispose() {
-    _removeListener();
-    super.dispose();
-  }
+class _FeedbackPageState extends State<RankingPage> {
+  int selectedNum = 1;
 
   @override
   Widget build(BuildContext context) {
-    final todayState = context.watch<TodayState>();
-
     List<ReadModel> todayReads = context.read<TodayProvider>().getTopDefense();
-    ReadModel? top1 = todayReads.isEmpty ? null : todayReads[0];
-    ReadModel? top2 = todayReads.length < 2 ? null : todayReads[1];
-    ReadModel? top3 = todayReads.length < 3 ? null : todayReads[2];
-    final UserModel user = context.watch<ProfileState>().user;
+
     return Scaffold(
-      body: todayState.todayStatus == TodayStatus.loading
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      RichText(
-                        text: TextSpan(children: [
-                          TextSpan(text: "오늘의 ", style: subTitleStyle),
-                          TextSpan(
-                              text: "BEST 디펜스",
-                              style: subTitleStyle.copyWith(color: pointColor))
-                        ]),
-                      ),
-                      SizedBox(
-                        height: 40,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                        child: Container(
-                          padding: EdgeInsets.all(12),
-                          color: backGrey,
-                          child: Text(
-                            '${todayReads[0].summary}',
-                            style:
-                                textStyle.copyWith(color: black1, height: 1.7),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 40,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text("🥇 ${top1 == null ? 0 : top1.score}",
-                              style: subTitleStyle),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          Text("🥈 ${top2 == null ? 0 : top2.score}",
-                              style: subTitleStyle),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          Text("🥉 ${top3 == null ? 0 : top3.score}",
-                              style: subTitleStyle)
-                        ],
-                      ),
-                    ],
+      backgroundColor: black1,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // 뒤로가기 버튼
+          Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(left: 24, top: 60),
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: SizedBox(
+                          width: 15,
+                          height: 15,
+                          child: Icon(
+                            Icons.arrow_back_ios,
+                            color: Colors.white,
+                          )),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 26,
+              ),
+              // 날짜
+              Container(
+                width: 112,
+                height: 29,
+                decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(50),
+                    border: Border.all(width: 1, color: Colors.white)),
+                child: Center(
+                  child: Text(
+                    getDateWithWeekday(),
+                    style: regularWhite14,
                   ),
                 ),
-                NavigateButton(
-                    onPressed: () {
-                      //trial은 푸쉬알림 설정할 때 같이 설정됨.
-                      if (user.trial) {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => LoadingPage()));
-                      } else {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) =>
-                                TimeSelectPage())); //구독하고 시간선택은 안한 경우
-                      }
-                    },
-                    text: "돌아가기",
-                    foregroundColor: Colors.white,
-                    backgroundColor: black1),
-                SizedBox(
-                  height: 26,
-                ),
-              ],
+              ),
+              SizedBox(
+                height: 21,
+              ),
+              // 제목
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "오늘의",
+                    style: semiBoldWhite24,
+                  ),
+                  SizedBox(
+                    width: 8,
+                  ),
+                  Text(
+                    "Best",
+                    style: typoBoldStyle,
+                  ),
+                  SizedBox(
+                    width: 2,
+                  ),
+                  Text(
+                    "디펜서",
+                    style: semiBoldOrange24,
+                  )
+                ],
+              ),
+              SizedBox(
+                height: 82,
+              ),
+              // 랭킹박스 3개
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [1, 2, 3]
+                      .map((e) => Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 6.0),
+                            child: ScoreRankCard(
+                                num: e,
+                                selectedNum: selectedNum,
+                                onTap: () {
+                                  setState(() {
+                                    selectedNum = e;
+                                  });
+                                },
+                                score: todayReads[e - 1].score),
+                          ))
+                      .toList()),
+              SizedBox(
+                height: 14,
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  //랭커의 요약
+                  Container(
+                    padding: EdgeInsets.all(20),
+                    width: 342,
+                    constraints: BoxConstraints(minHeight: 212),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      border: Border.all(
+                          color: _pointColors[selectedNum - 1], width: 1.5),
+                      color: Colors.white,
+                    ),
+                    child: Text('${todayReads[selectedNum - 1].summary}',
+                        style: mediumGrey3_16),
+                  ),
+                  SizedBox(
+                    height: 6,
+                  ),
+                  Container(
+                    width: 342,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          "${todayReads[selectedNum - 1].summary.length}/200",
+                          style: numberStyle.copyWith(
+                              fontSize: 14, color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 34.0),
+            child: NavigateButton(
+                onPressed: () {
+                  if (!context.read<ProfileState>().user.entitlementIsActive) {
+                    Navigator.pushNamed(context, SubscribePage.routeName);
+                  } else {
+                    Navigator.pushNamed(context, HomePage.routeName);
+                  }
+                },
+                text: context.read<ProfileState>().user.entitlementIsActive
+                    ? "홈으로 돌아가기"
+                    : "내일도 읽어보기"),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class ScoreRankCard extends StatelessWidget {
+  final int num;
+  final int selectedNum;
+  final Function() onTap;
+  final int score;
+
+  const ScoreRankCard(
+      {Key? key,
+      required this.num,
+      required this.selectedNum,
+      required this.onTap,
+      required this.score})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    Color scoreColor = _pointColors[num - 1]; // 점수와 랭킹 박스 색상
+    Color rankColor = Colors.white; // 랭킹 숫자 색상
+    Color boxColor = greyE; // 점수 박스 색상
+    Color textColor = grey7; // "점"의 색상
+
+    if (selectedNum == num) {
+      scoreColor = textColor = Colors.white;
+      rankColor = boxColor = _pointColors[num - 1];
+    }
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 12.0),
+            child: Container(
+              width: 106,
+              height: 44,
+              decoration: BoxDecoration(
+                  color: boxColor, borderRadius: BorderRadius.circular(15)),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "$score",
+                    style:
+                        numberStyle.copyWith(fontSize: 28, color: scoreColor),
+                  ),
+                  Text(
+                    "점",
+                    style: mediumWhite16.copyWith(color: textColor),
+                  ),
+                ],
+              ),
             ),
+          ),
+          Container(
+            width: 24,
+            height: 24,
+            decoration: BoxDecoration(
+                color: scoreColor, borderRadius: BorderRadius.circular(12)),
+            child: Center(
+              child: Text(
+                "$num",
+                style: numberStyle.copyWith(color: rankColor, fontSize: 16),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

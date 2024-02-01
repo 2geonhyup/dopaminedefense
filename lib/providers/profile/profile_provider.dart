@@ -11,7 +11,6 @@ class ProfileProvider extends StateNotifier<ProfileState> with LocatorMixin {
   ProfileProvider() : super(ProfileState.initial());
 
   Future<void> getProfile({required String uid}) async {
-    state = state.copyWith(profileStatus: ProfileStatus.loading);
     try {
       final UserModel user =
           await read<ProfileRepository>().getProfile(id: uid);
@@ -35,16 +34,35 @@ class ProfileProvider extends StateNotifier<ProfileState> with LocatorMixin {
     }
   }
 
+  Future<void> setTrial() async {
+    try {
+      await read<ProfileRepository>().setTrial(user: state.user);
+      state = state.copyWith(user: state.user.copyWith(trial: true));
+    } on CustomError catch (e) {
+      print("profilestate:${state}");
+    }
+  }
+
+  Future<void> setTime({required String push}) async {
+    try {
+      await read<ProfileRepository>().setPushTime(user: state.user, push: push);
+      state = state.copyWith(user: state.user.copyWith(push: push));
+      print(state.user);
+    } on CustomError catch (e) {
+      print("profilestate:${state}");
+    }
+  }
+
   void setSubscribe() {
     final UserModel user = state.user;
     state = state.copyWith(user: user.copyWith(entitlementIsActive: true));
     print(state.user);
   }
 
-  Future<void> removeProfile({required UserModel user}) async {
+  Future<void> removeProfile() async {
     state = state.copyWith(profileStatus: ProfileStatus.loading);
     try {
-      await read<ProfileRepository>().removeProfile(user: user);
+      await read<ProfileRepository>().removeProfile(user: state.user);
       state = ProfileState.initial();
       print("profilestate:${state}");
     } on CustomError catch (e) {

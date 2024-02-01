@@ -1,41 +1,25 @@
 import 'dart:async';
-
 import 'package:dopamine_defense_1/constants.dart';
-import 'package:dopamine_defense_1/functions.dart';
-import 'package:dopamine_defense_1/main.dart';
-import 'package:dopamine_defense_1/models/user.dart';
-import 'package:dopamine_defense_1/pages/ranking_page.dart';
-import 'package:dopamine_defense_1/pages/reading_page.dart';
-import 'package:dopamine_defense_1/pages/score_page.dart';
-import 'package:dopamine_defense_1/pages/subscribe_page.dart';
-import 'package:dopamine_defense_1/pages/summary_page.dart';
-
-import 'package:dopamine_defense_1/pages/time_select_page.dart';
-import 'package:dopamine_defense_1/providers/profile/profile_provider.dart';
+import 'package:dopamine_defense_1/providers/auth/auth_state.dart';
 import 'package:dopamine_defense_1/providers/today/today_provider.dart';
 import 'package:dopamine_defense_1/providers/today/today_state.dart';
-import 'package:fl_chart/fl_chart.dart';
+import 'package:dopamine_defense_1/widgets/push_time_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:intl/intl.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
-
-import '../models/defense.dart';
-import '../models/read.dart';
-import '../providers/auth/auth_provider.dart';
+import '../providers/profile/profile_provider.dart';
 import '../providers/profile/profile_state.dart';
-import '../providers/read/read_provider.dart';
-import '../providers/read/read_state.dart';
-import '../repositories/defense_repository.dart';
+import '../providers/read/read_list_provider.dart';
+import '../providers/read/read_list_state.dart';
 import '../utils/error_dialog.dart';
+import 'home_view.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
-  static const String routeName = 'home_page';
+  static const String routeName = '/home_page';
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -43,28 +27,38 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   DateTime _lastCheckedDate = DateTime.now();
+
   Timer? _timer;
 
-  late final TodayProvider todayProv;
-  late final void Function() _removeListener;
+  void _showPushTimeDialog() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // 구독했는데 푸쉬 알림 시간 설정 안한 경우
+      if (context.read<ProfileState>().user.push == '' &&
+          context.read<ProfileState>().user.entitlementIsActive) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return PushTimeDialog();
+          },
+        ).then(
+            //선택 안했을 경우, 오전 8시로 설정
+            (value) => context.read<ProfileProvider>().setTime(push: '08:00'));
+      }
+    });
+  }
 
+  // 날이 바뀌면 오늘의 정보를 업데이트
   void _checkDate() {
     DateTime now = DateTime.now();
-    // 날짜만 비교하기 위해 시간은 무시합니다.
     if (DateTime(now.year, now.month, now.day) !=
         DateTime(_lastCheckedDate.year, _lastCheckedDate.month,
             _lastCheckedDate.day)) {
-      print("new day");
       _getToday();
     }
     _lastCheckedDate = now;
   }
 
-  // Future<void> customerInfo() async {
-  //   CustomerInfo customerInfo = await Purchases.getCustomerInfo();
-  //   print(customerInfo);
-  // }
-
+  // 오늘의 정보 가져오기
   void _getToday() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context
@@ -73,7 +67,8 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void getRead() {
+  // 유저 읽음 리스트 가져오기
+  void _getRead() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context
           .read<ReadListProvider>()
@@ -81,315 +76,149 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void errorDialogListener(TodayState state) {
-    if (state.todayStatus == TodayStatus.error) {
-      errorDialog(context, state.error);
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    // customerInfo();
-    todayProv = context.read<TodayProvider>();
-    _removeListener =
-        todayProv.addListener(errorDialogListener, fireImmediately: false);
-    _timer = Timer.periodic(Duration(minutes: 1), (Timer t) => _checkDate());
+
+    _timer =
+        Timer.periodic(const Duration(minutes: 1), (Timer t) => _checkDate());
+
     _getToday();
-    getRead();
+    _getRead();
+    _showPushTimeDialog();
   }
 
   @override
   void dispose() {
     _timer?.cancel();
-    _removeListener();
     super.dispose();
   }
 
+  void errorDialogListener(ProfileState state) {
+    if (state.profileStatus == ProfileStatus.error) {
+      errorDialog(context, state.error);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final UserModel user = context.read<ProfileState>().user;
-    final todayState = context.watch<TodayState>();
-    DefenseModel todayDefense = todayState.todayDefense;
-    ReadModel todayRead = context.watch<ReadListState>().reads.lastWhere(
-        (element) => element.defenseId == todayDefense.id,
-        orElse: () => ReadModel.initial());
-    ReadStatus todayReadCheck = todayRead.readStatus;
-    print(todayRead);
-    if (todayState.todayStatus == TodayStatus.loading) {
-      return Scaffold(
-        backgroundColor: Colors.white,
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
+    return Scaffold(
+      body: Container(
+          decoration: BoxDecoration(
+              image: DecorationImage(
+            image: AssetImage(
+              "assets/images/paper-texture.png",
+            ),
+            fit: BoxFit.cover,
+          )),
+          child: HomeLayout()),
+    );
+  }
+}
+
+class HomeLayout extends StatelessWidget {
+  const HomeLayout({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final TodayState todayState = context.watch<TodayState>();
+    final ReadListState readListState = context.watch<ReadListState>();
+    // _getRead 함수 실행 결과 (시작, 로딩 중, 로딩 완료, 에러)
+    final ReadListStatus readListStatus = readListState.readListStatus;
+    // _getToday 함수 실행 결과 (시작, 로딩 중, 로딩 완료, 에러)
+    final TodayStatus todayStatus = todayState.todayStatus;
+
+    // 오늘 제출 했는지 판단
+    final bool todaySubmit = readListState.reads
+        .any((element) => element.defenseId == todayState.todayDefense.id);
+
+    // 에러 발생
+    if (readListStatus == ReadListStatus.error ||
+        todayStatus == TodayStatus.error) {
+      // 다시 로딩 버튼
+      return Center(
+        child: Text("error"),
       );
     }
 
-    return WillPopScope(
-      onWillPop: () async {
-        return false;
-      },
-      child: Scaffold(
-          backgroundColor: Colors.white,
-          body: Stack(
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  todayReadCheck == ReadStatus.end
-                      ? SizedBox(
-                          height: 30,
-                        )
-                      : SizedBox.shrink(),
-                  Center(
-                    child: Text(getDateWithWeekday(), style: informationStyle),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  IntrinsicWidth(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Center(
-                          child: RichText(
-                            text: TextSpan(children: [
-                              TextSpan(text: "오늘의 ", style: titleStyle),
-                              TextSpan(
-                                  text: "디펜스",
-                                  style: titleStyle.copyWith(color: pointColor))
-                            ]),
-                          ),
-                        ),
-                        Text(
-                          createTagString(todayDefense.tag),
-                          style: textStyle,
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 60,
-                  ),
-                  SizedBox(
-                      width: 250,
-                      height: 250,
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          CircularProgressIndicator(
-                            strokeCap: StrokeCap.round,
-                            value:
-                                todayState.todayRate[DateTime.now().hour] / 100,
-                            backgroundColor: widgetGrey, // 배경색
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                                pointColor), // 진행 색상
-                            strokeWidth: 20, // 두께
-                          ),
-                          Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "${todayState.todayRate[DateTime.now().hour]}%",
-                                  style: titleStyle.copyWith(height: 1.2),
-                                ),
-                                Text(
-                                  "가 읽었어요",
-                                  style: textStyle,
-                                ),
-                              ],
-                            ),
-                          )
-                        ],
-                      )),
-                  SizedBox(
-                    height: 80,
-                  ),
-                  HomeNavigateButton(
-                      todayReadCheck: todayReadCheck,
-                      user: user,
-                      todayDefense: todayDefense),
-                  todayReadCheck == ReadStatus.end
-                      ? Padding(
-                          padding: const EdgeInsets.only(top: 10.0),
-                          child: TextButton(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => SummaryPage(
-                                              todayDefense: todayDefense,
-                                            )));
-                              },
-                              child: Text(
-                                "다시 읽기",
-                                style: informationStyle.copyWith(
-                                    shadows: [
-                                      Shadow(
-                                          color: fontGrey,
-                                          offset: Offset(0, -5))
-                                    ],
-                                    color: Colors.transparent,
-                                    fontSize: 20,
-                                    decoration: TextDecoration.underline,
-                                    decorationColor: fontGrey),
-                              )),
-                        )
-                      : SizedBox.shrink(),
-                ],
+    return Stack(
+      children: [
+        Positioned(
+          top: 60,
+          right: 24,
+          child: PopUpMenuWidget(),
+        ),
+        //십자선
+        Positioned(
+          left: 61,
+          top: 0,
+          child: SizedBox(
+            height: 113,
+            child: VerticalDivider(
+              thickness: 0.5,
+              color: greyA,
+            ),
+          ),
+        ),
+        Positioned(
+          left: 61,
+          top: 232,
+          child: SizedBox(
+            height: 234,
+            child: VerticalDivider(
+              thickness: 0.5,
+              color: greyA,
+            ),
+          ),
+        ),
+        Positioned(
+          top: 241,
+          left: 0,
+          right: 0,
+          child: Divider(
+            thickness: 0.5,
+            color: greyA,
+          ),
+        ),
+        //아이콘
+        Positioned(
+            top: 110,
+            left: 24,
+            child: Container(
+              color: Colors.transparent,
+              child: Image.asset(
+                "assets/images/logo.png",
+                width: 232,
+                height: 128,
               ),
-              Positioned(
-                right: 30,
-                top: 40,
-                child: PopupMenuButton<String>(
-                  icon: Icon(
-                    Icons.menu,
-                    size: 30,
-                    color: fontGrey,
-                  ),
-                  onSelected: (String result) {
-                    // 선택한 옵션에 따라 동작 처리
-                  },
-                  itemBuilder: (BuildContext context) =>
-                      <PopupMenuEntry<String>>[
-                    PopupMenuItem<String>(
-                      onTap: () {
-                        context.read<AuthProvider>().signout();
-                      },
-                      value: '로그아웃',
-                      child: Text('로그아웃'),
-                    ),
-                    PopupMenuItem<String>(
-                      onTap: () async {
-                        final url =
-                            Uri.parse('http://pf.kakao.com/_zmTAG/chat');
-                        if (await canLaunchUrl(url)) {
-                          launchUrl(url, mode: LaunchMode.externalApplication);
-                        }
-                      },
-                      value: '문의하기',
-                      child: Text('문의하기'),
-                    ),
-                    PopupMenuItem<String>(
-                      onTap: () async {
-                        print(supabaseClient.auth.currentUser!.id);
-                        await context
-                            .read<ProfileProvider>()
-                            .removeProfile(user: user);
-                        await context
-                            .read<ReadListProvider>()
-                            .removeRead(userId: user.id);
-                        context.read<AuthProvider>().signout();
-                      },
-                      value: '계정 삭제',
-                      child: Text('계정 삭제'),
-                    ),
-                  ],
-                ),
+            )),
+        // 아래 위젯은 바닥기준 중앙 정렬
+
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: Column(
+            children: [
+              //오늘의 디펜스 카드
+              TodayDefenseCard(
+                todayState: todayState,
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              //읽어보기
+              ReadNavigateButton(
+                readListStatus: readListStatus,
+                todaySubmit: todaySubmit,
+              ),
+              SizedBox(
+                height: 60,
               ),
             ],
-          )),
-    );
-  }
-}
-
-class HomeNavigateButton extends StatelessWidget {
-  const HomeNavigateButton({
-    super.key,
-    required this.todayReadCheck,
-    required this.user,
-    required this.todayDefense,
-  });
-
-  final ReadStatus todayReadCheck;
-  final UserModel user;
-  final DefenseModel todayDefense;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 280,
-      height: 80,
-      child: TextButton(
-        onPressed: () {
-          if (todayReadCheck == ReadStatus.process) {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => ScorePage(
-                          todayDefense: todayDefense,
-                        )));
-            return;
-          }
-
-          if (user.trial &&
-              !user.entitlementIsActive &&
-              todayReadCheck == ReadStatus.initial) {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        SubscribePage())); // 어제했는데 구독 안하고 오늘 것 안 읽은 경우
-          } else if (todayReadCheck == ReadStatus.initial) {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => SummaryPage(
-                          todayDefense: todayDefense,
-                        ))); // 오늘 아직 참여안한경우(구독자든 비구독자든)
-          } else {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => ScorePage(
-                          todayDefense: todayDefense,
-                        ))); // 오늘 참여한 경우
-          }
-        },
-        child: Row(
-          children: [
-            todayReadCheck == ReadStatus.end
-                ? SizedBox.shrink()
-                : SizedBox(
-                    width: 28,
-                  ),
-            Expanded(
-              child: Center(
-                child: Text(
-                  todayReadCheck == ReadStatus.process
-                      ? "채점 중..."
-                      : todayReadCheck == ReadStatus.end
-                          ? "결과 보기"
-                          : "시작하기",
-                  style: buttonTextStyle,
-                ),
-              ),
-            ),
-            todayReadCheck == ReadStatus.end
-                ? SizedBox.shrink()
-                : Icon(
-                    Icons.arrow_forward_ios,
-                    size: 25,
-                  ),
-          ],
+          ),
         ),
-        style: TextButton.styleFrom(
-            backgroundColor: pointColor,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30))),
-      ),
+      ],
     );
   }
-}
-
-String createTagString(List tags) {
-  String combinedString = '';
-  for (String str in tags) {
-    combinedString += ('# $str '); // 공백을 추가하여 문자열을 연결
-  }
-
-  combinedString = combinedString.trim(); // 마지막 공백 제거
-  return combinedString;
 }

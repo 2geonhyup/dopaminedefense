@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sp;
 
 enum AuthStatus {
+  unknown,
   authenticated,
   unauthenticated,
 }
@@ -17,9 +18,7 @@ class AuthState extends Equatable {
   });
 
   factory AuthState.unknown() {
-    var initialStatus = supabaseClient.auth.currentSession == null
-        ? AuthStatus.unauthenticated
-        : AuthStatus.authenticated;
+    var initialStatus = AuthStatus.unknown;
     return AuthState(
       authStatus: initialStatus,
     );

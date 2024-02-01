@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dart_openai/dart_openai.dart';
 import 'package:dopamine_defense_1/functions.dart';
 import 'package:dopamine_defense_1/models/custom_error.dart';
@@ -71,6 +73,7 @@ class ReadRepository {
       required String summary,
       required int time,
       required UserModel user}) async {
+    ;
     // 채점부 코드
     OpenAI.apiKey = dotenv.get('OPEN_AI_KEY');
     var parsedFeedback; //피드백
@@ -140,8 +143,10 @@ class ReadRepository {
           ],
           temperature: 0,
         );
+        print(scoreCompletion.choices.first.message.content);
         var responseData =
             safeParseJson(scoreCompletion.choices.first.message.content);
+        print(responseData);
         promptScore = allToInt(responseData["score"]) * 3;
       } catch (e) {
         throw CustomError(
@@ -190,7 +195,7 @@ class ReadRepository {
 int allToInt(var input) {
   print('alltoint$input');
   if (input is String) {
-    var number = double.tryParse(input);
+    var number = int.tryParse(input);
     if (number != null) {
       return number.floor();
     } else {

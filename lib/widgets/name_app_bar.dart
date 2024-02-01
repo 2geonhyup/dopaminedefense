@@ -10,7 +10,7 @@ PreferredSizeWidget nameAppBar() {
       child: Text(
         'Dopamine Defense',
         style: TextStyle(
-            color: pointColor, fontWeight: FontWeight.w700, fontSize: 20),
+            color: orangePoint, fontWeight: FontWeight.w700, fontSize: 20),
       ),
     ),
     backgroundColor: Colors.transparent,

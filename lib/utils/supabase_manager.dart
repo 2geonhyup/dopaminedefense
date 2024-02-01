@@ -13,6 +13,7 @@ class SupabaseManager {
 
     // 데이터가 없으면 새로운 row를 추가합니다.
     if (findResponse == null || findResponse.isEmpty) {
+      print("cant");
       await supabase.from(table).insert(data);
       return false; // 새로운 데이터 insert 시 false
     }

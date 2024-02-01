@@ -1,8 +1,6 @@
 import 'package:dopamine_defense_1/pages/login_page.dart';
-import 'package:dopamine_defense_1/pages/subscribe_page.dart';
-import 'package:dopamine_defense_1/pages/time_select_page.dart';
+import 'package:dopamine_defense_1/pages/summary_page.dart';
 import 'package:flutter/material.dart';
-import 'package:dopamine_defense_1/main.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/auth/auth_state.dart';
@@ -22,24 +20,26 @@ class LoadingPage extends StatefulWidget {
 class _LoadingPageState extends State<LoadingPage> {
   late final ProfileProvider profileProv;
   late final void Function() _removeListener;
-
-  @override
-  void initState() {
-    super.initState();
-    profileProv = context.read<ProfileProvider>();
-    _removeListener = profileProv.addListener(errorDialogListener,
-        fireImmediately:
-            false); // fire immediately를 false로 설정해서 에러 시 빌드 후 에러창 뜨게 함
-    _getProfile();
-  }
-
   void _getProfile() {
     final String uid = context.read<AuthState>().user!.email!;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ProfileProvider>().getProfile(uid: uid);
     });
+  }
 
-    print("로딩에서 getprofile함!");
+  @override
+  void initState() {
+    profileProv = context.read<ProfileProvider>();
+    _removeListener = profileProv.addListener(errorDialogListener,
+        fireImmediately:
+            false); // fire immediately를 false로 설정해서 에러 시 빌드 후 에러창 뜨게 함
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _removeListener();
+    super.dispose();
   }
 
   void errorDialogListener(ProfileState state) {
@@ -49,19 +49,22 @@ class _LoadingPageState extends State<LoadingPage> {
   }
 
   @override
-  void dispose() {
-    _removeListener();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final authState = context.watch<AuthState>();
     final profileState = context.watch<ProfileState>();
 
-    if (profileState.profileStatus == ProfileStatus.loaded) {
+    print("loading");
+    if (authState.user != null) {
+      _getProfile();
+    }
+    if (authState.authStatus == AuthStatus.authenticated &&
+        profileState.profileStatus == ProfileStatus.loaded) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => HomePage()));
+        Navigator.pushReplacementNamed(context, HomePage.routeName);
+      });
+    } else if (authState.authStatus == AuthStatus.unauthenticated) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.pushNamed(context, LoginPage.routeName);
       });
     }
 
@@ -70,7 +73,3 @@ class _LoadingPageState extends State<LoadingPage> {
     );
   }
 }
-
-// WidgetsBinding.instance.addPostFrameCallback((_) {
-// Navigator.pushNamed(context, LoginPage.routeName);
-// });

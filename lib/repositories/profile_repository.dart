@@ -85,16 +85,32 @@ class ProfileRepository {
     }
   }
 
-  Future<void> setTime({required UserModel user, required String time}) async {
+  Future<void> setPushTime(
+      {required UserModel user, required String push}) async {
     print(user.id);
     try {
       await supabaseClient
           .from('ProfileData')
-          .update({'push': time, "trial": true}).match({'id': user.id});
+          .update({'push': push}).match({'id': user.id});
       OneSignal.login(user.id);
-      OneSignal.User.addTagWithKey("time", "$time");
+      OneSignal.User.addTagWithKey("time", "$push");
     } catch (e) {
       print(e.toString());
+      throw CustomError(
+        code: 'Exception',
+        message: e.toString(),
+        plugin: 'flutter_error/server_error',
+      );
+    }
+  }
+
+  Future<void> setTrial({required UserModel user}) async {
+    print(user.id);
+    try {
+      await supabaseClient
+          .from('ProfileData')
+          .update({"trial": true}).match({'id': user.id});
+    } catch (e) {
       throw CustomError(
         code: 'Exception',
         message: e.toString(),

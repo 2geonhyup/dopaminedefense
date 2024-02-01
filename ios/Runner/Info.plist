@@ -29,7 +29,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>io.supabase.dopaminedefense</string>
+				<string>io.supabase.dopaminedefense1</string>
 			</array>
 		</dict>
 	</array>
@@ -65,5 +65,9 @@
 	<true/>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+    <array>
+        <string>dev.flutter.background.refresh</string>
+    </array>
 </dict>
 </plist>

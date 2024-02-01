@@ -20,9 +20,9 @@ class AuthRepository {
     try {
       await supabaseClient.auth.signInWithOAuth(
         OAuthProvider.kakao,
-        authScreenLaunchMode: LaunchMode.externalApplication,
+        authScreenLaunchMode: LaunchMode.platformDefault,
         redirectTo:
-            kIsWeb ? null : 'io.supabase.dopaminedefense://login-callback/',
+            kIsWeb ? null : 'io.supabase.dopaminedefense1://login-callback/',
       );
     } catch (e) {
       print(e.toString());

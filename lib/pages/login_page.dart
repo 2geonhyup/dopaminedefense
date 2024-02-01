@@ -36,55 +36,75 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final signInState = context.watch<SignInState>();
-    return WillPopScope(
-        onWillPop: () async => false,
+    return PopScope(
+        canPop: false,
         child: Scaffold(
-          backgroundColor: pointColor,
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Center(
-                  child: Text(
-                    "도파민 디펜스",
-                    style: TextStyle(
-                        fontSize: 50,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w900),
+          body: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(
+                  "assets/images/paper-texture.png",
+                ),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: 60,
+                      ),
+                      Row(
+                        children: [
+                          SizedBox(
+                            width: 24,
+                          ),
+                          Image.asset(
+                            'assets/images/login-title.png',
+                            width: 204.5,
+                            height: 254,
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-              ),
-              Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 15.0),
-                    child: InkWell(
-                        onTap:
-                            signInState.signInStatus == SignInStatus.submitting
-                                ? null
-                                : _submit,
-                        child: Container(
-                            width: 300,
-                            height: 45,
-                            child:
-                                Image.asset('assets/images/kakao_login.png'))),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 50.0),
-                    child: InkWell(
-                        onTap:
-                            signInState.signInStatus == SignInStatus.submitting
-                                ? null
-                                : _appleSubmit,
-                        child: Container(
-                            width: 300,
-                            height: 48,
-                            child: Image.asset(
-                                'assets/images/appleid_button.png'))),
-                  ),
-                ],
-              ),
-            ],
+                Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 14.0),
+                      child: InkWell(
+                          onTap: signInState.signInStatus ==
+                                  SignInStatus.submitting
+                              ? null
+                              : _appleSubmit,
+                          child: Container(
+                              width: 342,
+                              height: 52,
+                              child: Image.asset(
+                                  'assets/images/apple-login.png'))),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 60.0),
+                      child: InkWell(
+                          onTap: signInState.signInStatus ==
+                                  SignInStatus.submitting
+                              ? null
+                              : _submit,
+                          child: Container(
+                              width: 342,
+                              height: 52,
+                              child: Image.asset(
+                                  'assets/images/kakao-login.png'))),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ));
   }

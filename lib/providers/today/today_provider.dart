@@ -1,8 +1,10 @@
 import 'package:dopamine_defense_1/models/custom_error.dart';
 import 'package:dopamine_defense_1/models/user.dart';
+import 'package:dopamine_defense_1/providers/read/read_list_state.dart';
 import 'package:dopamine_defense_1/providers/today/today_state.dart';
 import 'package:dopamine_defense_1/repositories/read_repository.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
+import 'package:provider/provider.dart';
 
 import '../../functions.dart';
 import '../../models/defense.dart';
@@ -14,8 +16,6 @@ class TodayProvider extends StateNotifier<TodayState> with LocatorMixin {
 
   // 오늘의 디펜스,참여현황을 가져옴
   Future<void> getToday({required UserModel user}) async {
-    state = state.copyWith(todayStatus: TodayStatus.loading);
-
     try {
       DefenseModel todayDefense = await read<DefenseRepository>()
           .getTodayDefense(
@@ -31,7 +31,7 @@ class TodayProvider extends StateNotifier<TodayState> with LocatorMixin {
               .getTodayRate(day: getCurrentDate());
           print(readRate);
           state = state.copyWith(
-              todayStatus: TodayStatus.success,
+              todayStatus: TodayStatus.loaded,
               todayRead: todayReads,
               todayDefense: todayDefense,
               todayRate: readRate);
@@ -49,13 +49,19 @@ class TodayProvider extends StateNotifier<TodayState> with LocatorMixin {
   List<ReadModel> getTopDefense() {
     List<ReadModel> reads = state.todayRead;
     reads.sort((a, b) => b.score.compareTo(a.score));
-    return reads.take(3).toList();
+    List<ReadModel> topReads = reads.take(3).toList();
+    ReadModel top1 = topReads.isEmpty ? ReadModel.initial() : topReads[0];
+    ReadModel top2 = topReads.length < 2 ? ReadModel.initial() : topReads[1];
+    ReadModel top3 = topReads.length < 3 ? ReadModel.initial() : topReads[2];
+    return [top1, top2, top3];
+  }
+
+  void addTodayRead(ReadModel read) {
+    state = state.copyWith(todayRead: [...state.todayRead, read]);
   }
 
   int calculatePercentile(int myScore) {
     List scores = state.todayRead.map((e) => e.score).toList();
-    // 자신의 점수를 배열에 추가합니다.
-    scores.add(myScore);
 
     // 점수를 오름차순으로 정렬합니다.
     scores.sort();

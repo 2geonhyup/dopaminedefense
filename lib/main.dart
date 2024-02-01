@@ -1,16 +1,22 @@
 import 'package:dopamine_defense_1/constants.dart';
+import 'package:dopamine_defense_1/pages/feedback_page.dart';
 import 'package:dopamine_defense_1/pages/home_page.dart';
 import 'package:dopamine_defense_1/pages/loading_page.dart';
 import 'package:dopamine_defense_1/pages/login_page.dart';
+import 'package:dopamine_defense_1/pages/ranking_page.dart';
+import 'package:dopamine_defense_1/pages/score_page.dart';
 import 'package:dopamine_defense_1/pages/splash_page.dart';
+import 'package:dopamine_defense_1/pages/subscribe_page.dart';
+import 'package:dopamine_defense_1/pages/summary_page.dart';
+import 'package:dopamine_defense_1/pages/time_select_page.dart';
 import 'package:dopamine_defense_1/providers/auth/auth_provider.dart';
 import 'package:dopamine_defense_1/providers/auth/auth_state.dart';
 import 'package:dopamine_defense_1/providers/profile/profile_provider.dart';
 import 'package:dopamine_defense_1/providers/profile/profile_state.dart';
 import 'package:dopamine_defense_1/providers/sign_in/sign_in_provider.dart';
 import 'package:dopamine_defense_1/providers/sign_in/sign_in_state.dart';
-import 'package:dopamine_defense_1/providers/read/read_provider.dart';
-import 'package:dopamine_defense_1/providers/read/read_state.dart';
+import 'package:dopamine_defense_1/providers/read/read_list_provider.dart';
+import 'package:dopamine_defense_1/providers/read/read_list_state.dart';
 import 'package:dopamine_defense_1/providers/today/today_provider.dart';
 import 'package:dopamine_defense_1/providers/today/today_state.dart';
 import 'package:dopamine_defense_1/repositories/auth_repository.dart';
@@ -31,10 +37,14 @@ import 'store_config.dart';
 import 'dart:io';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
   await dotenv.load(fileName: ".env");
   await sp.Supabase.initialize(
-    authOptions:
-        sp.FlutterAuthClientOptions(authFlowType: sp.AuthFlowType.pkce),
     url: 'https://ebneycbqwtuhyxggghia.supabase.co',
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
@@ -47,11 +57,15 @@ void main() async {
 
   OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
   OneSignal.initialize("6fa0c0f8-9a52-4cc0-80db-7cff7d735cec");
+  //TODO: 정확히 언제 (어떤 기준으로) 알림 허용 메시지가 뜨는지 알아보기
   OneSignal.Notifications.requestPermission(true);
-  WidgetsFlutterBinding.ensureInitialized();
 
   runApp(const MyApp());
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+  // Uri? uri = await AppLinks().getInitialAppLink();
+  // if (uri != null) {
+  //   print('main${uri.queryParameters['code']}');
+  // }
 }
 
 final supabaseClient = sp.Supabase.instance.client;
@@ -59,7 +73,6 @@ final supabaseClient = sp.Supabase.instance.client;
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -91,11 +104,11 @@ class MyApp extends StatelessWidget {
         StateNotifierProvider<ProfileProvider, ProfileState>(
           create: (context) => ProfileProvider(),
         ),
-        StateNotifierProvider<ReadListProvider, ReadListState>(
-          create: (context) => ReadListProvider(),
-        ),
         StateNotifierProvider<TodayProvider, TodayState>(
           create: (context) => TodayProvider(),
+        ),
+        StateNotifierProvider<ReadListProvider, ReadListState>(
+          create: (context) => ReadListProvider(),
         ),
       ],
       child: MaterialApp(
@@ -104,15 +117,21 @@ class MyApp extends StatelessWidget {
           scaffoldBackgroundColor: Colors.white,
           fontFamily: "Pretendard",
           colorScheme: ColorScheme.light(
-            primary: pointColor, // 기본 색상
+            primary: orangePoint, // 기본 색상
           ),
         ),
-        initialRoute: SplashPage.routeName,
+        home: LoadingPage(),
         routes: {
           SplashPage.routeName: (context) => const SplashPage(),
           LoginPage.routeName: (context) => const LoginPage(),
           HomePage.routeName: (context) => const HomePage(),
           LoadingPage.routeName: (context) => const LoadingPage(),
+          ScorePage.routeName: (context) => const ScorePage(),
+          SubscribePage.routeName: (context) => const SubscribePage(),
+          SummaryPage.routeName: (context) => const SummaryPage(),
+          FeedbackPage.routeName: (context) => const FeedbackPage(),
+          RankingPage.routeName: (context) => const RankingPage(),
+          TimeSelectPage.routeName: (context) => const TimeSelectPage(),
         },
       ),
     );
