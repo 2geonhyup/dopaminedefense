@@ -14,11 +14,11 @@ class ReadListState extends Equatable {
   final CustomError error;
   final ReadListStatus readListStatus;
 
-  ReadListState(
+  const ReadListState(
       {required this.reads, required this.error, required this.readListStatus});
 
   factory ReadListState.initial() {
-    return ReadListState(
+    return const ReadListState(
         reads: [],
         error: CustomError(),
         readListStatus: ReadListStatus.loading);

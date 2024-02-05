@@ -5,7 +5,6 @@ import 'package:dopamine_defense_1/pages/loading_page.dart';
 import 'package:dopamine_defense_1/pages/login_page.dart';
 import 'package:dopamine_defense_1/pages/ranking_page.dart';
 import 'package:dopamine_defense_1/pages/score_page.dart';
-import 'package:dopamine_defense_1/pages/splash_page.dart';
 import 'package:dopamine_defense_1/pages/subscribe_page.dart';
 import 'package:dopamine_defense_1/pages/summary_page.dart';
 import 'package:dopamine_defense_1/pages/time_select_page.dart';
@@ -116,13 +115,12 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           scaffoldBackgroundColor: Colors.white,
           fontFamily: "Pretendard",
-          colorScheme: ColorScheme.light(
+          colorScheme: const ColorScheme.light(
             primary: orangePoint, // 기본 색상
           ),
         ),
-        home: LoadingPage(),
+        home: const LoadingPage(),
         routes: {
-          SplashPage.routeName: (context) => const SplashPage(),
           LoginPage.routeName: (context) => const LoginPage(),
           HomePage.routeName: (context) => const HomePage(),
           LoadingPage.routeName: (context) => const LoadingPage(),

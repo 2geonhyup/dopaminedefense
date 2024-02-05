@@ -1,18 +1,14 @@
 import 'package:dopamine_defense_1/models/custom_error.dart';
-import 'package:dopamine_defense_1/pages/home_page.dart';
 import 'package:dopamine_defense_1/pages/loading_page.dart';
 import 'package:dopamine_defense_1/pages/subscribe_view.dart';
 import 'package:dopamine_defense_1/providers/profile/profile_provider.dart';
 import 'package:dopamine_defense_1/utils/error_dialog.dart';
-import 'package:dopamine_defense_1/utils/navigate_dialog.dart';
 import 'package:dopamine_defense_1/widgets/back_icon.dart';
 import 'package:dopamine_defense_1/widgets/navigate_button.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:dopamine_defense_1/widgets/re_loading_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
-import 'package:purchases_flutter/models/customer_info_wrapper.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 import '../constants.dart';
@@ -50,8 +46,7 @@ class _SubscribePageState extends State<SubscribePage> {
       try {
         // 상품 목록 받아오기
         offerings = await Purchases.getOfferings();
-      } on PlatformException catch (e) {
-        print('상품 목록 로딩 실패${e.toString()}');
+      } on PlatformException {
         // 상품 목록 로딩 실패 - 홈으로 돌아가기 화면
         return SubscribeStatus.failure;
       }
@@ -84,35 +79,13 @@ class _SubscribePageState extends State<SubscribePage> {
           Widget body;
           // 로딩 중
           if (!snapshot.hasData) {
-            body = Center(child: CircularProgressIndicator());
+            body = const Center(child: CircularProgressIndicator());
           }
           // 에러 발생
           else if (snapshot.hasError ||
               snapshot.data == SubscribeStatus.failure) {
-            body = Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    "상품 목록 로딩에 실패했습니다. \n아래 버튼을 누르고 다시 시도해주세요!",
-                    style: regularGrey16,
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  IconButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, LoadingPage.routeName);
-                      },
-                      icon: Icon(
-                        Icons.replay_circle_filled,
-                        color: greyA,
-                        size: 50,
-                      ))
-                ],
-              ),
+            body = const ReloadingScreen(
+              text: "상품 목록 로딩에 실패했습니다. \n아래 버튼을 누르고 다시 시도해주세요!",
             );
           }
           // 이미 구독함
@@ -127,14 +100,14 @@ class _SubscribePageState extends State<SubscribePage> {
                     style: regularGrey16,
                     textAlign: TextAlign.center,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   IconButton(
                       onPressed: () {
                         Navigator.pushNamed(context, LoadingPage.routeName);
                       },
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.replay_circle_filled,
                         color: greyA,
                         size: 50,
@@ -160,7 +133,7 @@ class _SubscribePageState extends State<SubscribePage> {
 class OfferingView extends StatefulWidget {
   final Offering offering;
 
-  OfferingView({Key? key, required this.offering}) : super(key: key);
+  const OfferingView({Key? key, required this.offering}) : super(key: key);
 
   @override
   State<OfferingView> createState() => _OfferingViewState();
@@ -168,6 +141,7 @@ class OfferingView extends StatefulWidget {
 
 class _OfferingViewState extends State<OfferingView> {
   int selected = 1; // 처음엔 3개월
+  bool loading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -181,10 +155,10 @@ class _OfferingViewState extends State<OfferingView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                height: 60,
+                height: MediaQuery.of(context).size.height > 800 ? 60 : 20,
               ),
-              BackIcon(),
-              SizedBox(
+              const BackIcon(),
+              const SizedBox(
                 height: 32,
               ),
               Image.asset(
@@ -192,14 +166,14 @@ class _OfferingViewState extends State<OfferingView> {
                 width: 225,
                 height: 68,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 13,
               ),
               Text(
                 'AI채점과 피드백까지!',
                 style: regularGrey16,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 62,
               ),
               Text(
@@ -207,14 +181,14 @@ class _OfferingViewState extends State<OfferingView> {
                 style:
                     mediumGrey3_16.copyWith(height: 1.42, letterSpacing: -0.17),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 4,
               ),
               Text(
                 "요금제를 선택한 후 3일간 무료체험 해보세요",
                 style: regularGrey14.copyWith(color: greyA),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 24,
               ),
               ListView.builder(
@@ -248,48 +222,63 @@ class _OfferingViewState extends State<OfferingView> {
           ),
           Padding(
             padding: const EdgeInsets.only(bottom: 34.0),
-            child: NavigateButton(
-              onPressed: () async {
-                var myProductList = widget.offering.availablePackages;
-                print(myProductList[selected].storeProduct.title);
-                print(myProductList[selected].storeProduct.description);
-                print(myProductList[selected].storeProduct.priceString);
-                try {
-                  // 구매하기
-                  CustomerInfo customerInfo =
-                      await Purchases.purchasePackage(myProductList[selected]);
-                  // 구매 정보 가져오기
-                  EntitlementInfo? entitlement =
-                      customerInfo.entitlements.all[entitlementID];
-                  // 구독 성공
-                  if (entitlement != null && entitlement.isActive) {
-                    context.read<ProfileProvider>().setSubscribe();
-                    Navigator.pushNamed(context, HomePage.routeName);
+            child: Center(
+              child: NavigateButton(
+                onPressed: () async {
+                  if (loading) return;
+                  setState(() {
+                    loading = true;
+                  });
+                  var myProductList = widget.offering.availablePackages;
+                  try {
+                    // 구매하기
+                    CustomerInfo customerInfo = await Purchases.purchasePackage(
+                        myProductList[selected]);
+                    // 구매 정보 가져오기
+                    EntitlementInfo? entitlement =
+                        customerInfo.entitlements.all[entitlementID];
+                    // 구독 성공
+                    if (entitlement != null && entitlement.isActive) {
+                      if (!context.mounted) return;
+                      context.read<ProfileProvider>().setSubscribe();
+                      Navigator.pushNamed(context, LoadingPage.routeName);
+                    }
                   }
                   //구독 실패
-                  else {
-                    errorDialog(
-                        context,
-                        CustomError(
-                            code: "알림", message: "구독이 정상적으로 완료되지 않았습니다."));
+                  on PlatformException catch (e) {
+                    if (e.message != "Purchase was cancelled.") {
+                      context.mounted
+                          ? errorDialog(
+                              context,
+                              const CustomError(
+                                  code: "알림", message: "구독이 완료되지 않았습니다."))
+                          : null;
+                    }
                   }
-                }
-                //구독 실패
-                catch (e) {
-                  print("catch!!$e");
-                  errorDialog(
-                      context,
-                      CustomError(
-                          code: "알림", message: "구독이 정상적으로 완료되지 않았습니다."));
-                }
-              },
-              width: 342,
-              text: "3일간 무료체험 시작하기",
-              foregroundColor: orangePoint,
-              backgroundColor: black1,
-              icon: Icon(
-                Icons.arrow_forward,
-                size: 24,
+                  setState(() {
+                    loading = false;
+                  });
+                },
+                width: 342,
+                text: loading ? "구독 로딩 중" : "3일간 무료체험 시작하기",
+                foregroundColor: loading ? Colors.white : orangePoint,
+                backgroundColor: loading ? greyA : black1,
+                icon: loading
+                    ? const Padding(
+                        padding: EdgeInsets.only(left: 4.0),
+                        child: SizedBox(
+                          width: 15,
+                          height: 15,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        ),
+                      )
+                    : const Icon(
+                        Icons.arrow_forward,
+                        size: 24,
+                      ),
               ),
             ),
           ),

@@ -2,7 +2,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/custom_error.dart';
 import '../models/defense.dart';
-import '../models/user.dart';
 
 class DefenseRepository {
   final SupabaseClient supabaseClient;
@@ -12,15 +11,12 @@ class DefenseRepository {
   });
 
   Future<List<DefenseModel>> getCourse({required String course}) async {
-    print(course);
-
     try {
       final List defenseData = await supabaseClient
           .from('AppDefenseData')
           .select()
           .eq('course', course == "모름" ? "고1 모의고사" : course)
           .order('day', ascending: true) as List;
-      print(defenseData);
       List<DefenseModel> courseList = defenseData.map((defense) {
         return DefenseModel.fromDoc(defense);
       }).toList();
@@ -56,13 +52,11 @@ class DefenseRepository {
   }
 
   Future<List<int>> getTodayRate({required String day}) async {
-    print(day);
     try {
       final List readRateData = await supabaseClient
           .from('AppReadRate')
           .select()
           .eq('day', DateTime.parse(day)) as List;
-      print(readRateData);
       List<dynamic> readRate = readRateData[0]["rate"];
       return readRate.map((item) => int.parse(item.toString())).toList();
     } catch (e) {

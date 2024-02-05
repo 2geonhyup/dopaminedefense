@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:step_progress_indicator/step_progress_indicator.dart';
-
 import '../constants.dart';
 
 class NavigateButton extends StatelessWidget {
@@ -29,6 +27,11 @@ class NavigateButton extends StatelessWidget {
       height: height,
       child: TextButton(
         onPressed: onPressed,
+        style: TextButton.styleFrom(
+            backgroundColor: backgroundColor,
+            foregroundColor: foregroundColor,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(90))),
         child: Center(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -41,15 +44,10 @@ class NavigateButton extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 4.0),
                       child: icon,
                     )
-                  : SizedBox.shrink()
+                  : const SizedBox.shrink()
             ],
           ),
         ),
-        style: TextButton.styleFrom(
-            backgroundColor: backgroundColor,
-            foregroundColor: foregroundColor,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(90))),
       ),
     );
   }

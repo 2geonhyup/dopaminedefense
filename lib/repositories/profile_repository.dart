@@ -6,7 +6,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../functions.dart';
 import '../models/custom_error.dart';
 import '../models/user.dart';
-import '../providers/profile/profile_state.dart';
 import '../store_config.dart';
 import '../utils/supabase_manager.dart';
 
@@ -41,7 +40,6 @@ class ProfileRepository {
           .select()
           .eq('id', supabaseClient.auth.currentUser!.email.toString())
           .limit(1);
-      print(profileData);
       if (profileData.isNotEmpty) {
         CustomerInfo customerInfo = await Purchases.getCustomerInfo();
         bool subscribed = false;
@@ -53,7 +51,7 @@ class ProfileRepository {
 
         return currentUser;
       } else {
-        throw CustomError(
+        throw const CustomError(
           code: 'Exception',
           message: "유저를 못 찾겠습니다.",
           plugin: 'flutter_error/server_error',
@@ -76,7 +74,6 @@ class ProfileRepository {
         'level': user.level
       }).match({'id': user.id});
     } catch (e) {
-      print(e.toString());
       throw CustomError(
         code: 'Exception',
         message: e.toString(),
@@ -87,15 +84,13 @@ class ProfileRepository {
 
   Future<void> setPushTime(
       {required UserModel user, required String push}) async {
-    print(user.id);
     try {
       await supabaseClient
           .from('ProfileData')
           .update({'push': push}).match({'id': user.id});
       OneSignal.login(user.id);
-      OneSignal.User.addTagWithKey("time", "$push");
+      OneSignal.User.addTagWithKey("time", push);
     } catch (e) {
-      print(e.toString());
       throw CustomError(
         code: 'Exception',
         message: e.toString(),
@@ -105,7 +100,6 @@ class ProfileRepository {
   }
 
   Future<void> setTrial({required UserModel user}) async {
-    print(user.id);
     try {
       await supabaseClient
           .from('ProfileData')
@@ -119,15 +113,27 @@ class ProfileRepository {
     }
   }
 
+  Future<void> removeTrial({required UserModel user}) async {
+    try {
+      await supabaseClient
+          .from('ProfileData')
+          .update({"trial": false}).match({'id': user.id});
+    } catch (e) {
+      throw CustomError(
+        code: 'Exception',
+        message: e.toString(),
+        plugin: 'flutter_error/server_error',
+      );
+    }
+  }
+
   Future<void> removeProfile({required UserModel user}) async {
     try {
-      var data = await supabaseClient
+      await supabaseClient
           .from('ProfileData')
           .delete()
           .match({'id': user.id}).select();
-      print(data);
     } catch (e) {
-      print(e.toString());
       throw CustomError(
         code: 'Exception',
         message: e.toString(),

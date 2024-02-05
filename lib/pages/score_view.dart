@@ -1,7 +1,5 @@
 import 'package:dopamine_defense_1/providers/today/today_provider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 import '../constants.dart';
@@ -16,7 +14,7 @@ class ScoreCard extends StatelessWidget {
     int avgScore = context.read<TodayProvider>().avgScore;
     bool loaded = todayRead.readStatus == ReadStatus.end;
 
-    return Container(
+    return SizedBox(
       height: 280,
       child: Stack(
         children: [
@@ -68,7 +66,7 @@ class ScoreCard extends StatelessWidget {
               height: 64,
             ),
           ),
-          Positioned(
+          const Positioned(
             right: 0,
             top: 0,
             child: SizedBox(
@@ -132,11 +130,16 @@ class LoadingButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: 250,
       height: 70,
       child: TextButton(
         onPressed: () {},
+        style: TextButton.styleFrom(
+            backgroundColor: black1,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(90))),
         child: Row(
           children: [
             Expanded(
@@ -147,7 +150,7 @@ class LoadingButton extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 30,
               width: 30,
               child: CircularProgressIndicator(
@@ -155,16 +158,11 @@ class LoadingButton extends StatelessWidget {
                 color: Colors.white,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 30,
             ),
           ],
         ),
-        style: TextButton.styleFrom(
-            backgroundColor: black1,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(90))),
       ),
     );
   }

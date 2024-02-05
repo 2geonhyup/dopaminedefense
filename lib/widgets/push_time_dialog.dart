@@ -1,9 +1,6 @@
 import 'package:dopamine_defense_1/pages/time_select_page.dart';
 import 'package:dopamine_defense_1/widgets/navigate_button.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../constants.dart';
@@ -11,6 +8,8 @@ import '../providers/profile/profile_state.dart';
 import '../repositories/profile_repository.dart';
 
 class PushTimeDialog extends StatelessWidget {
+  const PushTimeDialog({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -44,7 +43,7 @@ class PushTimeDialog extends StatelessWidget {
                             push: '08:00');
                         Navigator.pop(context);
                       },
-                      child: Center(
+                      child: const Center(
                         child: Icon(
                           Icons.close,
                           size: 24,
@@ -54,7 +53,7 @@ class PushTimeDialog extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 32,
                 ),
                 Row(
@@ -67,7 +66,7 @@ class PushTimeDialog extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 54,
                 ),
                 Container(
@@ -75,14 +74,14 @@ class PushTimeDialog extends StatelessWidget {
                   width: double.maxFinite,
                   decoration: ShapeDecoration(
                     shape: RoundedRectangleBorder(
-                      side: BorderSide(width: 1, color: orangePoint),
+                      side: const BorderSide(width: 1, color: orangePoint),
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         width: 10,
                       ),
                       Image.asset(
@@ -90,7 +89,7 @@ class PushTimeDialog extends StatelessWidget {
                         width: 32,
                         height: 32,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 6,
                       ),
                       Text.rich(
@@ -111,7 +110,7 @@ class PushTimeDialog extends StatelessWidget {
                     ],
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 16,
                 ),
                 NavigateButton(

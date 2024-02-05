@@ -1,5 +1,4 @@
 import 'package:dopamine_defense_1/pages/login_page.dart';
-import 'package:dopamine_defense_1/pages/summary_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -14,7 +13,7 @@ class LoadingPage extends StatefulWidget {
   static const routeName = '/loading';
 
   @override
-  _LoadingPageState createState() => _LoadingPageState();
+  State<LoadingPage> createState() => _LoadingPageState();
 }
 
 class _LoadingPageState extends State<LoadingPage> {
@@ -53,7 +52,6 @@ class _LoadingPageState extends State<LoadingPage> {
     final authState = context.watch<AuthState>();
     final profileState = context.watch<ProfileState>();
 
-    print("loading");
     if (authState.user != null) {
       _getProfile();
     }

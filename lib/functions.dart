@@ -22,8 +22,6 @@ String getDateWithWeekday() {
 }
 
 int getDateDifference(String startDate, String endDate) {
-  print(startDate);
-  print(endDate);
   DateTime start = DateTime.parse(startDate);
   DateTime end = DateTime.parse(endDate);
   Duration difference = end.difference(start);
@@ -33,7 +31,6 @@ int getDateDifference(String startDate, String endDate) {
 
 String convertDateFormat(String originalDate) {
   // 'yyyy-MM-dd' 형식에서 연도, 월, 일을 추출합니다.
-  String year = originalDate.substring(0, 4);
   String month = originalDate.substring(5, 7);
   String day = originalDate.substring(8, 10);
 

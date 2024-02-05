@@ -38,14 +38,16 @@ class _FeedbackPageState extends State<RankingPage> {
           Column(
             children: [
               Padding(
-                padding: EdgeInsets.only(left: 24, top: 60),
+                padding: EdgeInsets.only(
+                    left: 24,
+                    top: MediaQuery.of(context).size.height > 800 ? 60 : 20),
                 child: Row(
                   children: [
                     GestureDetector(
                       onTap: () {
                         Navigator.pop(context);
                       },
-                      child: SizedBox(
+                      child: const SizedBox(
                           width: 15,
                           height: 15,
                           child: Icon(
@@ -56,7 +58,7 @@ class _FeedbackPageState extends State<RankingPage> {
                   ],
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 26,
               ),
               // 날짜
@@ -74,7 +76,7 @@ class _FeedbackPageState extends State<RankingPage> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 21,
               ),
               // 제목
@@ -85,14 +87,14 @@ class _FeedbackPageState extends State<RankingPage> {
                     "오늘의",
                     style: semiBoldWhite24,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 8,
                   ),
                   Text(
                     "Best",
                     style: typoBoldStyle,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 2,
                   ),
                   Text(
@@ -102,7 +104,7 @@ class _FeedbackPageState extends State<RankingPage> {
                 ],
               ),
               SizedBox(
-                height: 82,
+                height: MediaQuery.of(context).size.height > 800 ? 82 : 20,
               ),
               // 랭킹박스 3개
               Row(
@@ -122,7 +124,7 @@ class _FeedbackPageState extends State<RankingPage> {
                                 score: todayReads[e - 1].score),
                           ))
                       .toList()),
-              SizedBox(
+              const SizedBox(
                 height: 14,
               ),
               Column(
@@ -130,22 +132,22 @@ class _FeedbackPageState extends State<RankingPage> {
                 children: [
                   //랭커의 요약
                   Container(
-                    padding: EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(20),
                     width: 342,
-                    constraints: BoxConstraints(minHeight: 212),
+                    constraints: const BoxConstraints(minHeight: 212),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(5),
                       border: Border.all(
                           color: _pointColors[selectedNum - 1], width: 1.5),
                       color: Colors.white,
                     ),
-                    child: Text('${todayReads[selectedNum - 1].summary}',
+                    child: Text(todayReads[selectedNum - 1].summary,
                         style: mediumGrey3_16),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 6,
                   ),
-                  Container(
+                  SizedBox(
                     width: 342,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,

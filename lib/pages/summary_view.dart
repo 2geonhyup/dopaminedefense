@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:dopamine_defense_1/pages/score_page.dart';
 import 'package:dopamine_defense_1/widgets/navigate_button.dart';
 
@@ -35,7 +33,7 @@ class _SummaryFieldState extends State<SummaryField> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Colors.white,
         border: Border(top: BorderSide(width: 1, color: greyC)),
       ),
@@ -53,7 +51,7 @@ class _SummaryFieldState extends State<SummaryField> {
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Padding(
@@ -70,7 +68,7 @@ class _SummaryFieldState extends State<SummaryField> {
                   cursorColor: grey3,
                   cursorWidth: 1,
                   decoration: InputDecoration(
-                      contentPadding: EdgeInsets.all(20),
+                      contentPadding: const EdgeInsets.all(20),
                       hintText: '200자 이내로 요약해주시면 AI의 피드백이 제공됩니다.\n\n',
                       hintStyle: mediumLightGreyC16, // 힌트 텍스트 색상
                       hintMaxLines: 3,
@@ -96,7 +94,7 @@ class _SummaryFieldState extends State<SummaryField> {
               ],
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 23,
           ),
           // 제출 버튼
@@ -106,13 +104,13 @@ class _SummaryFieldState extends State<SummaryField> {
                     summary: _textEditingController.text,
                     time: 300,
                   );
-              Navigator.pushNamed(context, ScorePage.routeName);
+              Navigator.pushReplacementNamed(context, ScorePage.routeName);
             },
             text: "제출하기",
             backgroundColor:
-                _textEditingController.text.length > 5 ? orangePoint : greyA,
+                _textEditingController.text.length > 20 ? orangePoint : greyA,
           ),
-          SizedBox(
+          const SizedBox(
             height: 34,
           ),
         ],
@@ -127,7 +125,7 @@ class TimerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 62,
       width: 62,
       child: Stack(

@@ -2,48 +2,46 @@ PODS:
   - app_links (0.0.1):
     - Flutter
   - Flutter (1.0.0)
-  - flutter_background_service_ios (0.0.3):
+  - onesignal_flutter (5.1.0):
     - Flutter
-  - onesignal_flutter (5.0.4):
-    - Flutter
-    - OneSignalXCFramework (= 5.0.4)
-  - OneSignalXCFramework (5.0.4):
-    - OneSignalXCFramework/OneSignalComplete (= 5.0.4)
-  - OneSignalXCFramework/OneSignal (5.0.4):
+    - OneSignalXCFramework (= 5.1.0)
+  - OneSignalXCFramework (5.1.0):
+    - OneSignalXCFramework/OneSignalComplete (= 5.1.0)
+  - OneSignalXCFramework/OneSignal (5.1.0):
     - OneSignalXCFramework/OneSignalCore
     - OneSignalXCFramework/OneSignalExtension
     - OneSignalXCFramework/OneSignalNotifications
     - OneSignalXCFramework/OneSignalOSCore
     - OneSignalXCFramework/OneSignalOutcomes
     - OneSignalXCFramework/OneSignalUser
-  - OneSignalXCFramework/OneSignalComplete (5.0.4):
+  - OneSignalXCFramework/OneSignalComplete (5.1.0):
     - OneSignalXCFramework/OneSignal
     - OneSignalXCFramework/OneSignalInAppMessages
     - OneSignalXCFramework/OneSignalLocation
-  - OneSignalXCFramework/OneSignalCore (5.0.4)
-  - OneSignalXCFramework/OneSignalExtension (5.0.4):
+  - OneSignalXCFramework/OneSignalCore (5.1.0)
+  - OneSignalXCFramework/OneSignalExtension (5.1.0):
     - OneSignalXCFramework/OneSignalCore
     - OneSignalXCFramework/OneSignalOutcomes
-  - OneSignalXCFramework/OneSignalInAppMessages (5.0.4):
+  - OneSignalXCFramework/OneSignalInAppMessages (5.1.0):
     - OneSignalXCFramework/OneSignalCore
     - OneSignalXCFramework/OneSignalNotifications
     - OneSignalXCFramework/OneSignalOSCore
     - OneSignalXCFramework/OneSignalOutcomes
     - OneSignalXCFramework/OneSignalUser
-  - OneSignalXCFramework/OneSignalLocation (5.0.4):
+  - OneSignalXCFramework/OneSignalLocation (5.1.0):
     - OneSignalXCFramework/OneSignalCore
     - OneSignalXCFramework/OneSignalNotifications
     - OneSignalXCFramework/OneSignalOSCore
     - OneSignalXCFramework/OneSignalUser
-  - OneSignalXCFramework/OneSignalNotifications (5.0.4):
+  - OneSignalXCFramework/OneSignalNotifications (5.1.0):
     - OneSignalXCFramework/OneSignalCore
     - OneSignalXCFramework/OneSignalExtension
     - OneSignalXCFramework/OneSignalOutcomes
-  - OneSignalXCFramework/OneSignalOSCore (5.0.4):
+  - OneSignalXCFramework/OneSignalOSCore (5.1.0):
     - OneSignalXCFramework/OneSignalCore
-  - OneSignalXCFramework/OneSignalOutcomes (5.0.4):
+  - OneSignalXCFramework/OneSignalOutcomes (5.1.0):
     - OneSignalXCFramework/OneSignalCore
-  - OneSignalXCFramework/OneSignalUser (5.0.4):
+  - OneSignalXCFramework/OneSignalUser (5.1.0):
     - OneSignalXCFramework/OneSignalCore
     - OneSignalXCFramework/OneSignalNotifications
     - OneSignalXCFramework/OneSignalOSCore
@@ -51,12 +49,12 @@ PODS:
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
-  - purchases_flutter (6.6.0):
+  - purchases_flutter (6.19.0):
     - Flutter
-    - PurchasesHybridCommon (= 8.2.1)
-  - PurchasesHybridCommon (8.2.1):
-    - RevenueCat (= 4.31.6)
-  - RevenueCat (4.31.6)
+    - PurchasesHybridCommon (= 9.3.0)
+  - PurchasesHybridCommon (9.3.0):
+    - RevenueCat (= 4.33.0)
+  - RevenueCat (4.33.0)
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
@@ -68,7 +66,6 @@ PODS:
 DEPENDENCIES:
   - app_links (from `.symlinks/plugins/app_links/ios`)
   - Flutter (from `Flutter`)
-  - flutter_background_service_ios (from `.symlinks/plugins/flutter_background_service_ios/ios`)
   - onesignal_flutter (from `.symlinks/plugins/onesignal_flutter/ios`)
   - OneSignalXCFramework (< 6.0, >= 5.0.0)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
@@ -88,8 +85,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/app_links/ios"
   Flutter:
     :path: Flutter
-  flutter_background_service_ios:
-    :path: ".symlinks/plugins/flutter_background_service_ios/ios"
   onesignal_flutter:
     :path: ".symlinks/plugins/onesignal_flutter/ios"
   path_provider_foundation:
@@ -106,17 +101,16 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   app_links: 5ef33d0d295a89d9d16bb81b0e3b0d5f70d6c875
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
-  flutter_background_service_ios: e30e0d3ee69e4cee66272d0c78eacd48c2e94aac
-  onesignal_flutter: 2c2f01520fa953d93fad18162538cc98d6da009b
-  OneSignalXCFramework: 7e0a6d68dda7e80b03069bd145232f480f8c2279
-  path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
-  purchases_flutter: 28b20f31e3186f173d2d24d20e7820e788a833a0
-  PurchasesHybridCommon: 9adfb3252d99e22142aae9b8456e0069f0cae72d
-  RevenueCat: a853fc1d6eb058e8546d91fba9c9c5cd2e041949
-  shared_preferences_foundation: 5b919d13b803cadd15ed2dc053125c68730e5126
+  onesignal_flutter: 419a224915bbc03181d176a3cb507a88e64af92f
+  OneSignalXCFramework: 72a6dbc5d97b7eba09a51837f7858d8957ac2629
+  path_provider_foundation: 3784922295ac71e43754bd15e0653ccfd36a147c
+  purchases_flutter: 72d49bdd40138037da9e0cf29a0a355ff0bbed80
+  PurchasesHybridCommon: 809461dbc8ff23b4dd0d5260c005b4017d6205b6
+  RevenueCat: 1512a074bebd78b7efb341ce1c33bfc8d292c53a
+  shared_preferences_foundation: b4c3b4cddf1c21f02770737f147a3f5da9d39695
   sign_in_with_apple: f3bf75217ea4c2c8b91823f225d70230119b8440
-  url_launcher_ios: bf5ce03e0e2088bad9cc378ea97fa0ed5b49673b
+  url_launcher_ios: bbd758c6e7f9fd7b5b1d4cde34d2b95fcce5e812
 
-PODFILE CHECKSUM: 416320f58c67fc56c562c6244a470c58506d87f9
+PODFILE CHECKSUM: e8a0fca0f0a4fbf88061c300a498e25e63c71d28
 
 COCOAPODS: 1.11.3

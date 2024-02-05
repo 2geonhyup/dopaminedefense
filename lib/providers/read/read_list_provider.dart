@@ -7,23 +7,14 @@ import 'package:dopamine_defense_1/providers/read/read_list_state.dart';
 import 'package:dopamine_defense_1/providers/today/today_provider.dart';
 import 'package:dopamine_defense_1/providers/today/today_state.dart';
 import 'package:state_notifier/state_notifier.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../models/custom_error.dart';
 import '../../models/user.dart';
-import '../../repositories/profile_repository.dart';
 import '../../repositories/read_repository.dart';
 import '../profile/profile_provider.dart';
 
 class ReadListProvider extends StateNotifier<ReadListState> with LocatorMixin {
   ReadListProvider() : super(ReadListState.initial());
-
-  // //저장
-  // void summarySave({required String read}) {
-  //   state = state.copyWith(
-  //     read: read,
-  //   );
-  // }
 
   Future<void> getRead({required String userId}) async {
     // if (state != ReadListState.initial()) return; // 서버에서 처음가져올 때만 적용
@@ -78,32 +69,28 @@ class ReadListProvider extends StateNotifier<ReadListState> with LocatorMixin {
         summary: summary);
     List<ReadModel> newReads = [...state.reads, newRead];
     state = state.copyWith(reads: newReads);
+    // 유저가 첫 시도라면 trial을 true로 바꿈
+    if (!read<ProfileState>().user.trial) {
+      await read<ProfileProvider>().setTrial();
+    }
     try {
-      List result = await read<ReadRepository>().sendSummary(
+      await read<ReadRepository>().sendSummary(
           summary: summary, user: user, time: time, defense: defense);
-
-      ReadModel lastRead = newReads.removeLast();
-      newReads = [
-        ...newReads,
-        lastRead.copyWith(
-            readStatus: ReadStatus.end, feedback: result[1], score: result[0])
-      ];
-
-      // 오늘의 읽기 목록에 내가 읽은 것 추가
-      read<TodayProvider>().addTodayRead(lastRead.copyWith(
-          readStatus: ReadStatus.end, feedback: result[1], score: result[0]));
-
-      // 유저가 첫 시도라면 trial을 true로 바꿈
-      if (!read<ProfileState>().user.trial) {
-        await read<ProfileProvider>().setTrial();
-      }
-
-      state = state.copyWith(reads: newReads);
-    } on CustomError catch (e) {
-      print(e.toString());
+    } on CustomError {
       // 채점 중 에러 발생시
       newReads.removeLast();
       state = state.copyWith(reads: newReads);
     }
+  }
+
+  void feedbackEnd({required ReadModel newRead}) {
+    state.reads.removeLast();
+    List<ReadModel> newReads = [
+      ...state.reads,
+      newRead,
+    ];
+    state = state.copyWith(reads: newReads);
+    // 오늘의 읽기 목록에 내가 읽은 것 추가
+    read<TodayProvider>().addTodayRead(newRead);
   }
 }

@@ -8,14 +8,14 @@ class ThreeMonthCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 110,
       child: Stack(
         children: [
           Padding(
             padding: const EdgeInsets.only(top: 6.0),
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 30),
+              padding: const EdgeInsets.symmetric(horizontal: 30),
               height: 104,
               decoration: BoxDecoration(
                 color: selected ? orangePoint : greyE,
@@ -33,7 +33,7 @@ class ThreeMonthCard extends StatelessWidget {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         height: 17,
                       ),
                       PriceWidget(
@@ -50,7 +50,7 @@ class ThreeMonthCard extends StatelessWidget {
               ),
             ),
           ),
-          Row(
+          const Row(
             children: [
               TagCard(title: "인기", color: orangePoint),
               SizedBox(
@@ -72,7 +72,7 @@ class OneMonthCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 30),
+      padding: const EdgeInsets.symmetric(horizontal: 30),
       height: 104,
       decoration: BoxDecoration(
         color: selected ? orangePoint : greyE,
@@ -133,7 +133,7 @@ class TagCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                '$title',
+                title,
                 style: TextStyle(
                   color: color,
                   fontSize: 12,
@@ -155,6 +155,7 @@ class PriceWidget extends StatelessWidget {
   final double fontSize;
   final Color color;
   const PriceWidget({
+    super.key,
     required this.priceString,
     required this.fontSize,
     required this.color,

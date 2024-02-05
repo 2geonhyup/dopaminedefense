@@ -9,14 +9,11 @@ class AuthProvider extends StateNotifier<AuthState> with LocatorMixin {
   @override
   void update(Locator watch) async {
     final authState = watch<sp.AuthState?>();
-    print(authState?.event);
-    print(authState?.session);
 
     // authstate session 있는 경우
     if (authState != null && (authState.session != null)) {
       // 만약 변화가 있지만 이미 authenticated 되어 있다면 그냥 리턴한다
       if (state.authStatus == AuthStatus.authenticated) return;
-      print("loading!!!${state.authStatus}");
       state = state.copyWith(
         authStatus: AuthStatus.authenticated,
         user: authState.session!.user,

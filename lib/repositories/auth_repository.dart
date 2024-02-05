@@ -25,7 +25,6 @@ class AuthRepository {
             kIsWeb ? null : 'io.supabase.dopaminedefense1://login-callback/',
       );
     } catch (e) {
-      print(e.toString());
       throw CustomError(
         code: 'Exception',
         message: e.toString(),
@@ -75,13 +74,5 @@ class AuthRepository {
 
   Future<void> signOut() async {
     await supabaseClient.auth.signOut();
-  }
-
-  Future<void> deleteUser() async {
-    try {
-      await supabaseClient.auth.signOut();
-    } catch (e) {
-      print(e.toString());
-    }
   }
 }

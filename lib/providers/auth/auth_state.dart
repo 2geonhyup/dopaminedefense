@@ -1,4 +1,3 @@
-import 'package:dopamine_defense_1/main.dart';
 import 'package:equatable/equatable.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sp;
 
@@ -12,7 +11,7 @@ class AuthState extends Equatable {
   final AuthStatus authStatus;
   final sp.User? user;
 
-  AuthState({
+  const AuthState({
     required this.authStatus,
     this.user,
   });

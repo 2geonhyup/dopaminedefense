@@ -13,7 +13,7 @@ class ProfileState extends Equatable {
   final ProfileStatus profileStatus;
   final UserModel user;
   final CustomError error;
-  ProfileState({
+  const ProfileState({
     required this.profileStatus,
     required this.user,
     required this.error,
@@ -23,7 +23,7 @@ class ProfileState extends Equatable {
     return ProfileState(
         profileStatus: ProfileStatus.loading,
         user: UserModel.initialUser(),
-        error: CustomError());
+        error: const CustomError());
   }
 
   @override

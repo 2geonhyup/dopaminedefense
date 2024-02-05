@@ -1,22 +1,25 @@
 import 'dart:convert';
-
-import 'package:dart_openai/dart_openai.dart';
-import 'package:dopamine_defense_1/functions.dart';
 import 'package:dopamine_defense_1/models/custom_error.dart';
 import 'package:dopamine_defense_1/models/defense.dart';
-import 'package:dopamine_defense_1/models/feedback.dart';
-import 'package:dopamine_defense_1/prompt.dart';
-import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-
+import 'package:http/http.dart';
 import '../models/read.dart';
 import '../models/user.dart';
-import 'package:ml_linalg/linalg.dart';
+
+String _url = 'ebneycbqwtuhyxggghia.supabase.co';
 
 class ReadRepository {
   final SupabaseClient supabaseClient;
+
   ReadRepository({required this.supabaseClient});
+
+  Stream readListByUser({required String userId}) async* {
+    yield supabaseClient
+        .from('AppReadData')
+        .stream(primaryKey: ['id'])
+        .eq('user_id', userId)
+        .toList();
+  }
 
   Future<List<ReadModel>> getReadByUser({required String userId}) async {
     try {
@@ -68,121 +71,29 @@ class ReadRepository {
     }
   }
 
-  Future<List> sendSummary(
+  Future<void> sendSummary(
       {required DefenseModel defense,
       required String summary,
       required int time,
       required UserModel user}) async {
-    ;
-    // 채점부 코드
-    OpenAI.apiKey = dotenv.get('OPEN_AI_KEY');
-    var parsedFeedback; //피드백
-    int? promptScore;
-    int? embeddingScore;
-
-    final systemMessage = const OpenAIChatCompletionChoiceMessageModel(
-      content: summarySystemPrompt,
-      role: OpenAIChatMessageRole.system,
-    );
-
-    final userMessage = OpenAIChatCompletionChoiceMessageModel(
-        role: OpenAIChatMessageRole.user,
-        content: summaryUserPrompt(defense: defense.content, summary: summary));
-
+    Uri uri = Uri.https(_url, '/functions/v1/post-functions');
     try {
-      final chatCompletion = await OpenAI.instance.chat.create(
-          model: "gpt-4-1106-preview",
-          temperature: 0,
-          topP: 1,
-          frequencyPenalty: 0,
-          presencePenalty: 0,
-          maxTokens: 2048,
-          messages: [
-            systemMessage,
-            userMessage,
-          ]);
-
-      print(chatCompletion.choices.first.message.content);
-      parsedFeedback =
-          safeParseJson(chatCompletion.choices.first.message.content);
-
-      try {
-        final OpenAIEmbeddingsModel summaryEmbeddingData = await OpenAI
-            .instance.embedding
-            .create(model: "text-embedding-ada-002", input: summary);
-        final OpenAIEmbeddingsModel textEmbeddingData = await OpenAI
-            .instance.embedding
-            .create(model: "text-embedding-ada-002", input: defense.content);
-        print(summaryEmbeddingData.data[0].embeddings);
-        final vector1 =
-            Vector.fromList(summaryEmbeddingData.data[0].embeddings);
-        final vector2 = Vector.fromList(textEmbeddingData.data[0].embeddings);
-        embeddingScore =
-            (vector1.distanceTo(vector2, distance: Distance.cosine) * 700)
-                .ceil();
-      } catch (e) {
-        throw CustomError(
-          code: 'Exception',
-          message: e.toString(),
-          plugin: 'flutter_error/server_error',
-        );
-      }
-
-      try {
-        final scoreCompletion = await OpenAI.instance.chat.create(
-          model: "gpt-3.5-turbo",
-          messages: [
-            OpenAIChatCompletionChoiceMessageModel(
-              content: scoreSystemPrompt,
-              role: OpenAIChatMessageRole.system,
-            ),
-            OpenAIChatCompletionChoiceMessageModel(
-              content: parsedFeedback["Comprehensive Feedback"],
-              role: OpenAIChatMessageRole.system,
-            ),
-          ],
-          temperature: 0,
-        );
-        print(scoreCompletion.choices.first.message.content);
-        var responseData =
-            safeParseJson(scoreCompletion.choices.first.message.content);
-        print(responseData);
-        promptScore = allToInt(responseData["score"]) * 3;
-      } catch (e) {
-        throw CustomError(
-          code: 'Exception',
-          message: e.toString(),
-          plugin: 'flutter_error/server_error',
-        );
-      }
-    } catch (e) {
-      throw CustomError(
-        code: 'Exception',
-        message: e.toString(),
-        plugin: 'flutter_error/server_error',
+      await post(
+        uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Function-Name': 'app-submit-summary',
+        },
+        body: jsonEncode({
+          "user_id": user.id,
+          "name": user.name,
+          "summary": summary,
+          "text_id": defense.id,
+          "time": time,
+          "length": defense.content.length
+        }),
       );
-    }
-
-    //제출부 코드
-    try {
-      print(promptScore);
-      print(embeddingScore);
-      await supabaseClient.from('AppReadData').insert({
-        'user_id': user.id,
-        'name': user.name,
-        'summary': summary,
-        'feedback': parsedFeedback,
-        'time': time,
-        'text_id': defense.id,
-        'length': defense.content.length,
-        "score": promptScore + embeddingScore,
-      });
-      return [
-        promptScore + embeddingScore,
-        FeedbackModel.fromJson(parsedFeedback)
-      ];
     } catch (e) {
-      print(e.toString());
       throw CustomError(
         code: 'Exception',
         message: e.toString(),
@@ -193,7 +104,6 @@ class ReadRepository {
 }
 
 int allToInt(var input) {
-  print('alltoint$input');
   if (input is String) {
     var number = int.tryParse(input);
     if (number != null) {

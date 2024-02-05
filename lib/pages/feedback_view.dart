@@ -1,5 +1,5 @@
-import 'package:dopamine_defense_1/models/custom_error.dart';
-import 'package:dopamine_defense_1/pages/loading_page.dart';
+// ignore_for_file: unnecessary_import
+
 import 'package:dopamine_defense_1/pages/ranking_page.dart';
 
 import 'package:dopamine_defense_1/providers/read/read_list_provider.dart';
@@ -37,11 +37,11 @@ class _BottomScoreBoxState extends State<BottomScoreBox> {
 
     // 아래 점수 박스
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
           border: Border.symmetric(
               horizontal: BorderSide(color: greyA, width: 0.5))),
       height: (MediaQuery.of(context).size.width / 2) - 14,
-      constraints: BoxConstraints(maxHeight: 181),
+      constraints: const BoxConstraints(maxHeight: 181),
       child: Row(
         children: [
           Expanded(
@@ -78,7 +78,7 @@ class _BottomScoreBoxState extends State<BottomScoreBox> {
                             "어제 점수",
                             style: mediumGrey7_16,
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 4,
                           ),
                           Row(
@@ -105,7 +105,6 @@ class _BottomScoreBoxState extends State<BottomScoreBox> {
                         ],
                       ),
                       Text(
-                        //TODO: 어제 안했을 때 만들어야 함
                         yesterdayScore == 0
                             ? "어제의 점수가 없어요"
                             : "어제보다 $upScore점 ${upScore >= 0 ? '높아요' : '낮아요'}",
@@ -113,7 +112,7 @@ class _BottomScoreBoxState extends State<BottomScoreBox> {
                             color: yesterdayScore == 0
                                 ? greyA
                                 : upScore >= 0
-                                    ? Color(0xff368CF1)
+                                    ? const Color(0xff368CF1)
                                     : orangePoint),
                       )
                     ],
@@ -130,7 +129,7 @@ class _BottomScoreBoxState extends State<BottomScoreBox> {
                   )),
             ],
           )),
-          VerticalDivider(
+          const VerticalDivider(
             width: 0.5,
             color: greyA,
           ),
@@ -170,7 +169,7 @@ class _BottomScoreBoxState extends State<BottomScoreBox> {
                             "오늘의 디펜서",
                             style: mediumGrey7_16,
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 4,
                           ),
                           Row(
@@ -200,8 +199,8 @@ class _BottomScoreBoxState extends State<BottomScoreBox> {
                         topDefense.score <= todayScore
                             ? "내가 1등이에요!"
                             : "나보다 +${topDefense.score - todayScore}점 높아요",
-                        style:
-                            regularOrange14.copyWith(color: Color(0xff368CF1)),
+                        style: regularOrange14.copyWith(
+                            color: const Color(0xff368CF1)),
                       )
                     ],
                   ),
@@ -295,7 +294,7 @@ class ScoreBox extends StatelessWidget {
               style: numberStyle.copyWith(fontSize: 32, color: color),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 4,
           ),
           Padding(

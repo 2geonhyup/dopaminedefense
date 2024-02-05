@@ -28,6 +28,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  path: any
   flutter:
     sdk: flutter
 
@@ -54,10 +55,9 @@ dependencies:
   action_slider: ^0.7.0
   step_progress_indicator: ^1.0.2
   scrollable_positioned_list: ^0.3.8
-  carousel_slider: ^4.2.1
   expandable_page_view: ^1.0.17
   flutter_cupertino_datetime_picker: ^3.0.0
-  flutter_background_service: ^5.0.5
+
 
 dev_dependencies:
   flutter_test:

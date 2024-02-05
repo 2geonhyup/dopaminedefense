@@ -1,8 +1,6 @@
-import 'package:dopamine_defense_1/widgets/name_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../constants.dart';
 import '../models/custom_error.dart';
 import '../providers/sign_in/sign_in_provider.dart';
 import '../providers/sign_in/sign_in_state.dart';
@@ -21,7 +19,9 @@ class _LoginPageState extends State<LoginPage> {
     try {
       await context.read<SignInProvider>().signIn();
     } on CustomError catch (e) {
-      errorDialog(context, e);
+      if (mounted) {
+        errorDialog(context, e);
+      }
     }
   }
 
@@ -29,7 +29,9 @@ class _LoginPageState extends State<LoginPage> {
     try {
       await context.read<SignInProvider>().appeSignIn();
     } on CustomError catch (e) {
-      errorDialog(context, e);
+      if (mounted) {
+        errorDialog(context, e);
+      }
     }
   }
 
@@ -40,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
         canPop: false,
         child: Scaffold(
           body: Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage(
                   "assets/images/paper-texture.png",
@@ -55,12 +57,12 @@ class _LoginPageState extends State<LoginPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         height: 60,
                       ),
                       Row(
                         children: [
-                          SizedBox(
+                          const SizedBox(
                             width: 24,
                           ),
                           Image.asset(
@@ -82,7 +84,7 @@ class _LoginPageState extends State<LoginPage> {
                                   SignInStatus.submitting
                               ? null
                               : _appleSubmit,
-                          child: Container(
+                          child: SizedBox(
                               width: 342,
                               height: 52,
                               child: Image.asset(
@@ -95,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
                                   SignInStatus.submitting
                               ? null
                               : _submit,
-                          child: Container(
+                          child: SizedBox(
                               width: 342,
                               height: 52,
                               child: Image.asset(

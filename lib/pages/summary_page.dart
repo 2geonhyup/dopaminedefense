@@ -28,7 +28,7 @@ class _SummaryPageState extends State<SummaryPage> {
   int seconds = 0;
   late Timer _timer;
   void _startTimer() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         seconds++;
       });
@@ -38,7 +38,7 @@ class _SummaryPageState extends State<SummaryPage> {
   void _scrollDown() {
     _controller.animateTo(
       _controller.position.maxScrollExtent,
-      duration: Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 500),
       curve: Curves.fastOutSlowIn,
     );
   }
@@ -86,7 +86,7 @@ class _SummaryPageState extends State<SummaryPage> {
           FocusScope.of(context).unfocus();
         },
         child: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
               image: DecorationImage(
             image: AssetImage(
               "assets/images/paper-texture.png",
@@ -98,11 +98,11 @@ class _SummaryPageState extends State<SummaryPage> {
             padding: EdgeInsets.zero,
             children: [
               // 뒤로가기 버튼
-              Padding(
+              const Padding(
                 padding: EdgeInsets.only(left: 24, top: 60),
                 child: BackIcon(),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 32,
               ),
               // 상단 제목 및 위젯들
@@ -115,7 +115,7 @@ class _SummaryPageState extends State<SummaryPage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           height: 5,
                         ),
                         // 날짜
@@ -124,7 +124,7 @@ class _SummaryPageState extends State<SummaryPage> {
                           style:
                               regularGrey16.copyWith(fontSize: 14, height: 1.2),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 4,
                         ),
                         // 제목
@@ -134,7 +134,7 @@ class _SummaryPageState extends State<SummaryPage> {
                               "오늘의",
                               style: semiBoldBlack24,
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 10,
                             ),
                             defenseTypo,
@@ -156,7 +156,7 @@ class _SummaryPageState extends State<SummaryPage> {
                 child: Container(
                   color: Colors.white,
                   child: Padding(
-                    padding: EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(20),
                     child: Text(
                       todayDefense.content,
                       style: regularBlack16.copyWith(
@@ -166,7 +166,7 @@ class _SummaryPageState extends State<SummaryPage> {
                 ),
               ),
               // 입력창
-              SummaryField(),
+              const SummaryField(),
             ],
           ),
         ),

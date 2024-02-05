@@ -1,17 +1,10 @@
-import 'package:carousel_slider/carousel_controller.dart';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:dopamine_defense_1/models/custom_error.dart';
-import 'package:dopamine_defense_1/pages/loading_page.dart';
-import 'package:dopamine_defense_1/pages/ranking_page.dart';
 import 'package:dopamine_defense_1/pages/subscribe_page.dart';
 import 'package:dopamine_defense_1/providers/profile/profile_state.dart';
 
 import 'package:dopamine_defense_1/providers/read/read_list_state.dart';
 import 'package:expandable_page_view/expandable_page_view.dart';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 import '../constants.dart';
@@ -22,10 +15,10 @@ import 'feedback_view.dart';
 import 'home_page.dart';
 
 List<Color> _colors = [
-  Color(0xff60B7B7),
-  Color(0xff966CDB),
-  Color(0xffEC9540),
-  Color(0xff94CC79)
+  const Color(0xff60B7B7),
+  const Color(0xff966CDB),
+  const Color(0xffEC9540),
+  const Color(0xff94CC79)
 ];
 
 List<String> _titles = ["종합 피드백", "요약 다시보기", "중요 포인트", "누락된 포인트"];
@@ -56,7 +49,6 @@ class _FeedbackPageState extends State<FeedbackPage> {
       listToString(myRead.feedback.keyPointsAddressed),
       listToString(myRead.feedback.misInterpretations)
     ];
-    print(contents);
 
     return Scaffold(
       backgroundColor: selectedColor,
@@ -65,86 +57,121 @@ class _FeedbackPageState extends State<FeedbackPage> {
         children: [
           Column(
             children: [
-              SizedBox(
-                height: 60,
+              MediaQuery.of(context).size.height > 800
+                  ? Column(
+                      children: [
+                        const SizedBox(
+                          height: 60,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // 점수 박스
+                              ScoreBox(
+                                score: myRead.score,
+                                color: selectedColor,
+                              ),
+                              // 홈으로 돌아가는 x아이콘 (구독 안한 경우 구독화면 뜰 수도 있음)
+                              GestureDetector(
+                                onTap: () {
+                                  if (!context
+                                      .read<ProfileState>()
+                                      .user
+                                      .entitlementIsActive) {
+                                    Navigator.pushNamed(
+                                        context, SubscribePage.routeName);
+                                  } else {
+                                    Navigator.pushNamed(
+                                        context, HomePage.routeName);
+                                  }
+                                },
+                                child: Image.asset(
+                                  'assets/images/x_bg.png',
+                                  width: 32,
+                                  height: 32,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const SizedBox(
+                              width: 24,
+                            ),
+                            Image.asset(
+                              "assets/images/down-arrow.png",
+                              width: 24,
+                              height: 24,
+                            ),
+                          ],
+                        ),
+                      ],
+                    )
+                  : const SizedBox.shrink(),
+
+              const SizedBox(
+                height: 32,
               ),
+              // 현재 보고 있는 항목
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // 점수 박스
-                    ScoreBox(
-                      score: myRead.score,
-                      color: selectedColor,
+                    Row(
+                      children: [
+                        Text(
+                          "자세히 보기",
+                          style: semiBoldBlack24.copyWith(color: grey3),
+                        ),
+                        const SizedBox(
+                          width: 9,
+                        ),
+                        Image.asset(
+                          "assets/images/eye.png",
+                          width: 24,
+                          height: 24,
+                        ),
+                      ],
                     ),
                     // 홈으로 돌아가는 x아이콘 (구독 안한 경우 구독화면 뜰 수도 있음)
-                    GestureDetector(
-                      onTap: () {
-                        if (!context
-                            .read<ProfileState>()
-                            .user
-                            .entitlementIsActive) {
-                          Navigator.pushNamed(context, SubscribePage.routeName);
-                        } else {
-                          Navigator.pushNamed(context, HomePage.routeName);
-                        }
-                      },
-                      child: Image.asset(
-                        'assets/images/x_bg.png',
-                        width: 32,
-                        height: 32,
-                      ),
-                    )
+                    MediaQuery.of(context).size.height <= 800
+                        ? GestureDetector(
+                            onTap: () {
+                              if (!context
+                                  .read<ProfileState>()
+                                  .user
+                                  .entitlementIsActive) {
+                                Navigator.pushNamed(
+                                    context, SubscribePage.routeName);
+                              } else {
+                                Navigator.pushNamed(
+                                    context, HomePage.routeName);
+                              }
+                            },
+                            child: Image.asset(
+                              'assets/images/x_bg.png',
+                              width: 32,
+                              height: 32,
+                            ),
+                          )
+                        : const SizedBox.shrink()
                   ],
                 ),
               ),
-              SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    width: 24,
-                  ),
-                  Image.asset(
-                    "assets/images/down-arrow.png",
-                    width: 24,
-                    height: 24,
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 32,
-              ),
-              // 현재 보고 있는 항목
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    width: 24,
-                  ),
-                  Text(
-                    "지세히 보기",
-                    style: semiBoldBlack24.copyWith(color: grey3),
-                  ),
-                  SizedBox(
-                    width: 9,
-                  ),
-                  Image.asset(
-                    "assets/images/eye.png",
-                    width: 24,
-                    height: 24,
-                  ),
-                ],
-              ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               // 항목 버튼
-              Container(
+              SizedBox(
                 height: 32,
                 child: ListView.builder(
                     scrollDirection: Axis.horizontal,
@@ -165,7 +192,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
                               pageController.jumpToPage(index);
                               scrollController.animateTo(
                                   feedbackButtonOffsets[index],
-                                  duration: Duration(seconds: 1),
+                                  duration: const Duration(seconds: 1),
                                   curve: Curves.ease);
                               setState(() {
                                 _selected = index;
@@ -184,14 +211,14 @@ class _FeedbackPageState extends State<FeedbackPage> {
               pageController: pageController,
               onPageChanged: (pageIndex) {
                 scrollController.animateTo(feedbackButtonOffsets[pageIndex],
-                    duration: Duration(seconds: 1), curve: Curves.ease);
+                    duration: const Duration(seconds: 1), curve: Curves.ease);
                 setState(() {
                   _selected = pageIndex;
                 });
               },
             ),
           ),
-          BottomScoreBox()
+          const BottomScoreBox()
         ],
       ),
     );
@@ -210,7 +237,6 @@ class FeedbackSlider extends StatelessWidget {
       : super(key: key);
   @override
   Widget build(BuildContext context) {
-    print(contents);
     return ExpandablePageView.builder(
         onPageChanged: onPageChanged,
         controller: pageController,
@@ -225,7 +251,7 @@ class FeedbackSlider extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 6.0),
                   child: Container(
                     width: double.maxFinite,
-                    padding: EdgeInsets.only(
+                    padding: const EdgeInsets.only(
                         left: 20, right: 20, top: 20, bottom: 42),
                     decoration: BoxDecoration(
                         color: Colors.white,

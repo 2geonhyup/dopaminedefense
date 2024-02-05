@@ -5,7 +5,7 @@ import '../constants.dart';
 PreferredSizeWidget nameAppBar() {
   return AppBar(
     automaticallyImplyLeading: false,
-    title: Align(
+    title: const Align(
       alignment: Alignment.centerLeft,
       child: Text(
         'Dopamine Defense',
@@ -16,7 +16,7 @@ PreferredSizeWidget nameAppBar() {
     backgroundColor: Colors.transparent,
     elevation: 0,
     bottom: PreferredSize(
-      preferredSize: Size.fromHeight(0), // 테두리의 높이 설정
+      preferredSize: const Size.fromHeight(0), // 테두리의 높이 설정
       child: Container(
         color: Colors.black26, // 테두리의 색상
         height: 0.5, // 테두리의 두께

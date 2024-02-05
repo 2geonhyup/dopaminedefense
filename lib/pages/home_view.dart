@@ -1,12 +1,10 @@
 import 'package:action_slider/action_slider.dart';
 import 'package:dopamine_defense_1/pages/loading_page.dart';
-import 'package:dopamine_defense_1/pages/login_page.dart';
 import 'package:dopamine_defense_1/pages/score_page.dart';
 import 'package:dopamine_defense_1/pages/subscribe_page.dart';
 import 'package:dopamine_defense_1/pages/summary_page.dart';
 import 'package:dopamine_defense_1/pages/time_select_page.dart';
 import 'package:dopamine_defense_1/utils/navigate_dialog.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
@@ -52,7 +50,7 @@ class TodayDefenseCard extends StatelessWidget {
             style: regularGrey16,
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 12,
         ),
         Stack(
@@ -73,7 +71,7 @@ class TodayDefenseCard extends StatelessWidget {
                         "%의 디펜서들이 읽었어요",
                         style: mediumWhite12,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 6,
                       ),
                       SingleChildScrollView(
@@ -141,7 +139,7 @@ class TagBox extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(right: 6.0),
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 10),
         height: 26,
         decoration: BoxDecoration(
             color: grey7, borderRadius: BorderRadius.circular(13)),
@@ -178,7 +176,7 @@ class ReadNavigateButton extends StatelessWidget {
       );
     }
     return ActionSlider.standard(
-      boxShadow: [],
+      boxShadow: const [],
       width: 342,
       height: 80,
       backgroundColor: orangePoint,
@@ -195,16 +193,18 @@ class ReadNavigateButton extends StatelessWidget {
       customForegroundBuilder: (context, state, child) => child!,
       action: (controller) {
         controller.setAnchorPosition(1);
-        print(user.entitlementIsActive);
         // 점수 화면 - 오늘 것 요약제출을 완료한 경우 (아직 채점중이더라도)
-        if (todaySubmit)
+        if (todaySubmit) {
           Navigator.pushNamed(context, ScorePage.routeName);
+        }
         // 구독 화면 - 이미 한번 읽었고, 아직 구독을 하지 않은 경우
-        else if (user.trial && !user.entitlementIsActive)
+        else if (user.trial && !user.entitlementIsActive) {
           Navigator.pushNamed(context, SubscribePage.routeName);
+        }
         // 글읽기 화면 - 나머지 경우 (구독을 하고 오늘 것 완료하지 않았거나, 구독을 안했는데 첫 참여인 경우)
-        else
+        else {
           Navigator.pushNamed(context, SummaryPage.routeName);
+        }
 
         controller.setAnchorPosition(0);
       },
@@ -215,7 +215,7 @@ class ReadNavigateButton extends StatelessWidget {
             "오늘의 디펜스",
             style: semiBoldWhite22,
           ),
-          SizedBox(
+          const SizedBox(
             width: 23,
           ),
           Image.asset("assets/images/three-arrow.png"),
@@ -267,9 +267,13 @@ class _PopUpMenuWidgetState extends State<PopUpMenuWidget> {
         onTap: () async {
           functionDialog(context, "알림", "정말로 계정을 삭제하시겠습니까?", () async {
             await context.read<ReadListProvider>().removeRead();
-            await context.read<ProfileProvider>().removeProfile();
-            context.read<AuthProvider>().signout();
-            Navigator.pushNamed(context, LoadingPage.routeName);
+            context.mounted
+                ? await context.read<ProfileProvider>().removeProfile()
+                : null;
+            context.mounted ? context.read<AuthProvider>().signout() : null;
+            context.mounted
+                ? Navigator.pushNamed(context, LoadingPage.routeName)
+                : null;
           });
         },
       ),
@@ -278,17 +282,11 @@ class _PopUpMenuWidgetState extends State<PopUpMenuWidget> {
         shadowColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
         color: Colors.transparent,
-        child: Image.asset(
-          'assets/images/menu.png',
-          width: 24,
-          height: 24,
-        ),
-        constraints: BoxConstraints(maxWidth: 160),
+        constraints: const BoxConstraints(maxWidth: 160),
         onSelected: (String result) {
           // 선택한 옵션에 따라 동작 처리
-          print(result);
         },
-        padding: EdgeInsets.symmetric(vertical: 0),
+        padding: const EdgeInsets.symmetric(vertical: 0),
         position: PopupMenuPosition.under,
         itemBuilder: (BuildContext context) => popUpMenuList.map((e) {
               return PopupMenuItem<String>(
@@ -305,17 +303,17 @@ class _PopUpMenuWidgetState extends State<PopUpMenuWidget> {
                             bottom: Radius.circular(e.index == 3 ? 5 : 0)),
                         color: Colors.white,
                         border: Border(
-                            left: BorderSide(width: 0.5, color: greyC),
-                            right: BorderSide(width: 0.5, color: greyC),
-                            bottom: BorderSide(width: 0.5, color: greyC),
+                            left: const BorderSide(width: 0.5, color: greyC),
+                            right: const BorderSide(width: 0.5, color: greyC),
+                            bottom: const BorderSide(width: 0.5, color: greyC),
                             top: e.index == 0
-                                ? BorderSide(width: 0.5, color: greyC)
+                                ? const BorderSide(width: 0.5, color: greyC)
                                 : BorderSide.none)),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           width: 16,
                         ),
                         Text(
@@ -325,7 +323,12 @@ class _PopUpMenuWidgetState extends State<PopUpMenuWidget> {
                       ],
                     )),
               );
-            }).toList());
+            }).toList(),
+        child: Image.asset(
+          'assets/images/menu.png',
+          width: 24,
+          height: 24,
+        ));
   }
 }
 

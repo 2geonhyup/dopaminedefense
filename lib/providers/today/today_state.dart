@@ -28,10 +28,10 @@ class TodayState extends Equatable {
   factory TodayState.initial() {
     return TodayState(
         todayStatus: TodayStatus.loading,
-        error: CustomError(),
-        todayRead: [],
+        error: const CustomError(),
+        todayRead: const [],
         todayDefense: DefenseModel.initial(),
-        todayRate: []);
+        todayRate: const []);
   }
 
   @override

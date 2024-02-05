@@ -1,10 +1,8 @@
 import 'package:dopamine_defense_1/models/custom_error.dart';
 import 'package:dopamine_defense_1/models/user.dart';
-import 'package:dopamine_defense_1/providers/read/read_list_state.dart';
 import 'package:dopamine_defense_1/providers/today/today_state.dart';
 import 'package:dopamine_defense_1/repositories/read_repository.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
-import 'package:provider/provider.dart';
 
 import '../../functions.dart';
 import '../../models/defense.dart';
@@ -29,7 +27,6 @@ class TodayProvider extends StateNotifier<TodayState> with LocatorMixin {
         try {
           List<int> readRate = await read<DefenseRepository>()
               .getTodayRate(day: getCurrentDate());
-          print(readRate);
           state = state.copyWith(
               todayStatus: TodayStatus.loaded,
               todayRead: todayReads,
@@ -70,7 +67,9 @@ class TodayProvider extends StateNotifier<TodayState> with LocatorMixin {
     int myIndex = scores.indexOf(myScore);
 
     // 상위 몇 퍼센트에 해당하는지 계산합니다.
-    double percentile = (scores.length - myIndex - 1) / (scores.length) * 100;
+    double percentile = scores.isEmpty
+        ? 1
+        : (scores.length - myIndex - 1) / (scores.length) * 100;
     return percentile == 0 ? 1 : percentile.ceil();
   }
 

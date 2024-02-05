@@ -1,20 +1,11 @@
 import 'package:dopamine_defense_1/constants.dart';
-import 'package:dopamine_defense_1/models/user.dart';
 import 'package:dopamine_defense_1/pages/home_page.dart';
-import 'package:dopamine_defense_1/pages/subscribe_page.dart';
-import 'package:dopamine_defense_1/pages/time_picker.dart';
 import 'package:dopamine_defense_1/providers/profile/profile_provider.dart';
-import 'package:dopamine_defense_1/providers/profile/profile_state.dart';
-import 'package:dopamine_defense_1/repositories/profile_repository.dart';
 import 'package:dopamine_defense_1/widgets/navigate_button.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_cupertino_datetime_picker/flutter_cupertino_datetime_picker.dart';
-import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:provider/provider.dart';
 import '../widgets/back_icon.dart';
-import 'loading_page.dart';
 
 class TimeSelectPage extends StatefulWidget {
   const TimeSelectPage({Key? key}) : super(key: key);
@@ -39,11 +30,11 @@ class _TimeSelectPageState extends State<TimeSelectPage> {
             Column(
               mainAxisSize: MainAxisSize.max,
               children: [
-                SizedBox(
+                const SizedBox(
                   height: 60,
                 ),
-                BackIcon(),
-                SizedBox(
+                const BackIcon(),
+                const SizedBox(
                   height: 32,
                 ),
                 Row(
@@ -55,7 +46,7 @@ class _TimeSelectPageState extends State<TimeSelectPage> {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 13,
                 ),
                 Row(
@@ -72,7 +63,7 @@ class _TimeSelectPageState extends State<TimeSelectPage> {
               child: Center(
                 child: AspectRatio(
                   aspectRatio: 1,
-                  child: Container(
+                  child: SizedBox(
                     width: double.maxFinite,
                     child: TimePickerWidget(
                       onChange: (dateTime) {
@@ -92,7 +83,9 @@ class _TimeSelectPageState extends State<TimeSelectPage> {
                   await context
                       .read<ProfileProvider>()
                       .setTime(push: '$hour:$min');
-                  Navigator.pushNamed(context, HomePage.routeName);
+                  context.mounted
+                      ? Navigator.pushNamed(context, HomePage.routeName)
+                      : null;
                 },
                 width: 342,
                 text: "완료",
@@ -108,15 +101,15 @@ class _TimeSelectPageState extends State<TimeSelectPage> {
 
 class TimePickerWidget extends StatelessWidget {
   final Function(DateTime) onChange;
-  TimePickerWidget({Key? key, required this.onChange}) : super(key: key);
-  String INIT_DATETIME = '2024-01-31 07:00';
-  String DATE_FORMAT = 'HH시:mm분';
+  const TimePickerWidget({Key? key, required this.onChange}) : super(key: key);
+  final String initDatetime = '2024-01-31 07:00';
+  final String dateFormat = 'HH시:mm분';
 
   @override
   Widget build(BuildContext context) {
     return DateTimePickerWidget(
-      initDateTime: DateTime.parse(INIT_DATETIME),
-      dateFormat: DATE_FORMAT,
+      initDateTime: DateTime.parse(initDatetime),
+      dateFormat: dateFormat,
       minuteDivider: 15,
       pickerTheme: DateTimePickerTheme(
         itemTextStyle: semiBoldBlack24,

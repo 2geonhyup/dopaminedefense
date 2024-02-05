@@ -1,13 +1,10 @@
 import 'dart:async';
 import 'package:dopamine_defense_1/constants.dart';
-import 'package:dopamine_defense_1/providers/auth/auth_state.dart';
 import 'package:dopamine_defense_1/providers/today/today_provider.dart';
 import 'package:dopamine_defense_1/providers/today/today_state.dart';
 import 'package:dopamine_defense_1/widgets/push_time_dialog.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:dopamine_defense_1/widgets/re_loading_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import '../providers/profile/profile_provider.dart';
 import '../providers/profile/profile_state.dart';
@@ -38,7 +35,7 @@ class _HomePageState extends State<HomePage> {
         showDialog(
           context: context,
           builder: (BuildContext context) {
-            return PushTimeDialog();
+            return const PushTimeDialog();
           },
         ).then(
             //선택 안했을 경우, 오전 8시로 설정
@@ -102,16 +99,19 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-          decoration: BoxDecoration(
-              image: DecorationImage(
-            image: AssetImage(
-              "assets/images/paper-texture.png",
-            ),
-            fit: BoxFit.cover,
-          )),
-          child: HomeLayout()),
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        body: Container(
+            decoration: const BoxDecoration(
+                image: DecorationImage(
+              image: AssetImage(
+                "assets/images/paper-texture.png",
+              ),
+              fit: BoxFit.cover,
+            )),
+            child: const HomeLayout()),
+      ),
     );
   }
 }
@@ -136,20 +136,18 @@ class HomeLayout extends StatelessWidget {
     if (readListStatus == ReadListStatus.error ||
         todayStatus == TodayStatus.error) {
       // 다시 로딩 버튼
-      return Center(
-        child: Text("error"),
-      );
+      return const ReloadingScreen(text: "죄송합니다. 다시 로딩해주세요.");
     }
 
     return Stack(
       children: [
-        Positioned(
+        const Positioned(
           top: 60,
           right: 24,
           child: PopUpMenuWidget(),
         ),
         //십자선
-        Positioned(
+        const Positioned(
           left: 61,
           top: 0,
           child: SizedBox(
@@ -160,7 +158,7 @@ class HomeLayout extends StatelessWidget {
             ),
           ),
         ),
-        Positioned(
+        const Positioned(
           left: 61,
           top: 232,
           child: SizedBox(
@@ -171,7 +169,7 @@ class HomeLayout extends StatelessWidget {
             ),
           ),
         ),
-        Positioned(
+        const Positioned(
           top: 241,
           left: 0,
           right: 0,
@@ -204,7 +202,7 @@ class HomeLayout extends StatelessWidget {
               TodayDefenseCard(
                 todayState: todayState,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               //읽어보기
@@ -212,7 +210,7 @@ class HomeLayout extends StatelessWidget {
                 readListStatus: readListStatus,
                 todaySubmit: todaySubmit,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 60,
               ),
             ],
