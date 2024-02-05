@@ -1,12 +1,8 @@
 import 'dart:convert';
-
-import 'package:dopamine_defense_1/functions.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/custom_error.dart';
 import '../models/feedback.dart';
-
-String _url = "dopamine-defense.vercel.app";
 
 class FeedbackRepository {
   final SupabaseClient supabaseClient;
@@ -28,8 +24,6 @@ class FeedbackRepository {
       String feedbackJson = removeJsonTags(summaryData[0]["feedback"]);
 
       final jsonData = jsonDecode(feedbackJson) as Map<String, dynamic>;
-
-      print(jsonData);
 
       return FeedbackModel.fromJson(jsonData);
     } catch (e) {

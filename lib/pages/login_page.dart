@@ -1,8 +1,6 @@
-import 'package:dopamine_defense_1/widgets/name_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../constants.dart';
 import '../models/custom_error.dart';
 import '../providers/sign_in/sign_in_provider.dart';
 import '../providers/sign_in/sign_in_state.dart';
@@ -21,7 +19,9 @@ class _LoginPageState extends State<LoginPage> {
     try {
       await context.read<SignInProvider>().signIn();
     } on CustomError catch (e) {
-      errorDialog(context, e);
+      if (mounted) {
+        errorDialog(context, e);
+      }
     }
   }
 
@@ -29,62 +29,84 @@ class _LoginPageState extends State<LoginPage> {
     try {
       await context.read<SignInProvider>().appeSignIn();
     } on CustomError catch (e) {
-      errorDialog(context, e);
+      if (mounted) {
+        errorDialog(context, e);
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final signInState = context.watch<SignInState>();
-    return WillPopScope(
-        onWillPop: () async => false,
+    return PopScope(
+        canPop: false,
         child: Scaffold(
-          backgroundColor: pointColor,
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Center(
-                  child: Text(
-                    "도파민 디펜스",
-                    style: TextStyle(
-                        fontSize: 50,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w900),
+          body: Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(
+                  "assets/images/paper-texture.png",
+                ),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(
+                        height: 60,
+                      ),
+                      Row(
+                        children: [
+                          const SizedBox(
+                            width: 24,
+                          ),
+                          Image.asset(
+                            'assets/images/login-title.png',
+                            width: 204.5,
+                            height: 254,
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-              ),
-              Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 15.0),
-                    child: InkWell(
-                        onTap:
-                            signInState.signInStatus == SignInStatus.submitting
-                                ? null
-                                : _submit,
-                        child: Container(
-                            width: 300,
-                            height: 45,
-                            child:
-                                Image.asset('assets/images/kakao_login.png'))),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 50.0),
-                    child: InkWell(
-                        onTap:
-                            signInState.signInStatus == SignInStatus.submitting
-                                ? null
-                                : _appleSubmit,
-                        child: Container(
-                            width: 300,
-                            height: 48,
-                            child: Image.asset(
-                                'assets/images/appleid_button.png'))),
-                  ),
-                ],
-              ),
-            ],
+                Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 14.0),
+                      child: InkWell(
+                          onTap: signInState.signInStatus ==
+                                  SignInStatus.submitting
+                              ? null
+                              : _appleSubmit,
+                          child: SizedBox(
+                              width: 342,
+                              height: 52,
+                              child: Image.asset(
+                                  'assets/images/apple-login.png'))),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 60.0),
+                      child: InkWell(
+                          onTap: signInState.signInStatus ==
+                                  SignInStatus.submitting
+                              ? null
+                              : _submit,
+                          child: SizedBox(
+                              width: 342,
+                              height: 52,
+                              child: Image.asset(
+                                  'assets/images/kakao-login.png'))),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ));
   }

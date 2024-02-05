@@ -8,7 +8,7 @@ class FeedbackModel extends Equatable {
   final List<String> misInterpretations;
   final List<String> keyPointsAddressed;
 
-  FeedbackModel({
+  const FeedbackModel({
     required this.comprehensiveFeedback, // 종합 피드백
     required this.clarifySpecificMisunderstandings, //나만을 위한 🔑 포인트
     required this.frequentlyUsedWords, // 자주 사용한 단어
@@ -39,7 +39,7 @@ class FeedbackModel extends Equatable {
   }
 
   factory FeedbackModel.initialFeedback() {
-    return FeedbackModel(
+    return const FeedbackModel(
       comprehensiveFeedback: '',
       clarifySpecificMisunderstandings: [],
       frequentlyUsedWords: [],

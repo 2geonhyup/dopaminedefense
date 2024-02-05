@@ -1,128 +1,124 @@
 import 'package:dopamine_defense_1/constants.dart';
-import 'package:dopamine_defense_1/models/user.dart';
-import 'package:dopamine_defense_1/pages/subscribe_page.dart';
-import 'package:dopamine_defense_1/providers/profile/profile_state.dart';
-import 'package:dopamine_defense_1/repositories/profile_repository.dart';
+import 'package:dopamine_defense_1/pages/home_page.dart';
+import 'package:dopamine_defense_1/providers/profile/profile_provider.dart';
 import 'package:dopamine_defense_1/widgets/navigate_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
-import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:flutter_cupertino_datetime_picker/flutter_cupertino_datetime_picker.dart';
 import 'package:provider/provider.dart';
-
-import 'home_page.dart';
-import 'loading_page.dart';
+import '../widgets/back_icon.dart';
 
 class TimeSelectPage extends StatefulWidget {
   const TimeSelectPage({Key? key}) : super(key: key);
+  static const String routeName = "time_select_page";
 
   @override
   State<TimeSelectPage> createState() => _TimeSelectPageState();
 }
 
 class _TimeSelectPageState extends State<TimeSelectPage> {
-  DateTime _dateTime = DateTime.now();
+  DateTime _dateTime = DateTime.parse('2023-01-31 07:00');
 
   @override
   Widget build(BuildContext context) {
-    final UserModel user = context.watch<ProfileState>().user;
-    String hour = _dateTime.hour.toString().padLeft(2, '0');
-    String min = _dateTime.minute.toString().padLeft(2, '0');
-    print(min);
-    print(hour);
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            "글을 읽기에\n언제가 가장 좋은가요?",
-            textAlign: TextAlign.center,
-            style: subTitleStyle,
-          ),
-          SizedBox(
-            height: 15,
-          ),
-          Text(
-            "선택한 시간에 글을 보내드릴께요.",
-            style: textStyle,
-          ),
-          SizedBox(
-            height: 50,
-          ),
-          hourMinute(),
-          SizedBox(
-            height: 50,
-          ),
-          NavigateButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      backgroundColor: Colors.white,
-                      surfaceTintColor: Colors.white,
-                      title: Text(
-                        '시간 설정',
-                      ),
-                      content: Text(
-                        '${_dateTime.hour}시 ${_dateTime.minute}분에 매일 글을 보내드릴께요!\n(해당 시간은 수정할 수 없습니다)',
-                      ),
-                      actions: <Widget>[
-                        TextButton(
-                          child: Text('확인'),
-                          onPressed: () async {
-                            //최종제출
-                            context.read<ProfileRepository>().setTime(
-                                user: context.read<ProfileState>().user,
-                                time: '${hour}:${min}');
-
-                            Navigator.of(context).pop(); // 다이얼로그 닫기
-
-                            if (user.entitlementIsActive) {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                    builder: (context) => LoadingPage()),
-                              );
-                            } else {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                    builder: (context) => SubscribePage()),
-                              );
-                            }
-                          },
-                        ),
-                        TextButton(
-                          child: Text('취소'),
-                          onPressed: () {
-                            Navigator.of(context).pop(); // 다이얼로그 닫기
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-              width: 300,
-              text: "무료체험 시작하기",
-              foregroundColor: Colors.white,
-              backgroundColor: black1)
-        ],
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                const SizedBox(
+                  height: 60,
+                ),
+                const BackIcon(),
+                const SizedBox(
+                  height: 32,
+                ),
+                Row(
+                  children: [
+                    Image.asset(
+                      "assets/images/time-select-title.png",
+                      width: 225,
+                      height: 68,
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 13,
+                ),
+                Row(
+                  children: [
+                    Text(
+                      '원하시는 시간에 글을 보내드릴게요',
+                      style: regularGrey16,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            Expanded(
+              child: Center(
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: SizedBox(
+                    width: double.maxFinite,
+                    child: TimePickerWidget(
+                      onChange: (dateTime) {
+                        _dateTime = dateTime;
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 34.0),
+              child: NavigateButton(
+                onPressed: () async {
+                  String hour = _dateTime.hour.toString().padLeft(2, '0');
+                  String min = _dateTime.minute.toString().padLeft(2, '0');
+                  await context
+                      .read<ProfileProvider>()
+                      .setTime(push: '$hour:$min');
+                  context.mounted
+                      ? Navigator.pushNamed(context, HomePage.routeName)
+                      : null;
+                },
+                width: 342,
+                text: "완료",
+                backgroundColor: orangePoint,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
+}
 
-  Widget hourMinute() {
-    return new TimePickerSpinner(
-      spacing: 30,
-      minutesInterval: 10,
-      itemHeight: 80,
-      isForce2Digits: true,
-      normalTextStyle: subTitleStyle.copyWith(color: fontGrey),
-      highlightedTextStyle: subTitleStyle,
-      onTimeChange: (time) {
-        setState(() {
-          _dateTime = time;
-        });
+class TimePickerWidget extends StatelessWidget {
+  final Function(DateTime) onChange;
+  const TimePickerWidget({Key? key, required this.onChange}) : super(key: key);
+  final String initDatetime = '2024-01-31 07:00';
+  final String dateFormat = 'HH시:mm분';
+
+  @override
+  Widget build(BuildContext context) {
+    return DateTimePickerWidget(
+      initDateTime: DateTime.parse(initDatetime),
+      dateFormat: dateFormat,
+      minuteDivider: 15,
+      pickerTheme: DateTimePickerTheme(
+        itemTextStyle: semiBoldBlack24,
+        itemHeight: 60,
+        pickerHeight: MediaQuery.of(context).size.height,
+        showTitle: false,
+      ),
+      onChange: (dateTime, selectedIndex) {
+        onChange(dateTime);
       },
     );
   }

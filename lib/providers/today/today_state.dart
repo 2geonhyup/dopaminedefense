@@ -5,9 +5,8 @@ import 'package:equatable/equatable.dart';
 import '../../models/custom_error.dart';
 
 enum TodayStatus {
-  initial,
   loading,
-  success,
+  loaded,
   error,
 }
 
@@ -28,11 +27,11 @@ class TodayState extends Equatable {
 
   factory TodayState.initial() {
     return TodayState(
-        todayStatus: TodayStatus.initial,
-        error: CustomError(),
-        todayRead: [],
+        todayStatus: TodayStatus.loading,
+        error: const CustomError(),
+        todayRead: const [],
         todayDefense: DefenseModel.initial(),
-        todayRate: []);
+        todayRate: const []);
   }
 
   @override

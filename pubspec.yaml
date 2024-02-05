@@ -28,6 +28,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  path: any
   flutter:
     sdk: flutter
 
@@ -46,13 +47,17 @@ dependencies:
   sign_in_with_apple: ^4.3.0
   crypto: ^3.0.3
   intl: ^0.19.0
-  fl_chart: ^0.66.0
-  flutter_modular: ^6.3.2
   flutter_time_picker_spinner: ^2.0.0
   onesignal_flutter: ^5.0.4
   ml_linalg: ^13.12.2
-  in_app_purchase: ^3.1.12
   purchases_flutter: ^6.6.0
+  pie_chart: ^5.4.0
+  action_slider: ^0.7.0
+  step_progress_indicator: ^1.0.2
+  scrollable_positioned_list: ^0.3.8
+  expandable_page_view: ^1.0.17
+  flutter_cupertino_datetime_picker: ^3.0.0
+
 
 dev_dependencies:
   flutter_test:
@@ -93,5 +98,19 @@ flutter:
           weight: 800
         - asset: assets/fonts/Pretendard-Black.ttf
           weight: 900
+    - family: Hakgyo
+      fonts:
+        - asset: assets/fonts/HakgyoansimBareondotumR.ttf
+          weight: 400
+    - family: SinDongYup
+      fonts:
+        - asset: assets/fonts/ShinDongYupHandwriting-B.ttf
+          weight: 700
+        - asset: assets/fonts/ShinDongYupHandwriting-R.ttf
+          weight: 400
+    - family: Sulphur Point
+      fonts:
+        - asset: assets/fonts/SulphurPoint-Bold.ttf
+          weight: 700
 
 

@@ -16,13 +16,12 @@ String getKoreanWeekday(DateTime date) {
 
 String getDateWithWeekday() {
   DateTime now = DateTime.now();
-  String formattedDate = '${now.month}월 ${now.day}일 (${getKoreanWeekday(now)})';
+  String formattedDate =
+      '${now.month}월 ${now.day}일, ${getKoreanWeekday(now)}요일';
   return formattedDate;
 }
 
 int getDateDifference(String startDate, String endDate) {
-  print(startDate);
-  print(endDate);
   DateTime start = DateTime.parse(startDate);
   DateTime end = DateTime.parse(endDate);
   Duration difference = end.difference(start);
@@ -32,7 +31,6 @@ int getDateDifference(String startDate, String endDate) {
 
 String convertDateFormat(String originalDate) {
   // 'yyyy-MM-dd' 형식에서 연도, 월, 일을 추출합니다.
-  String year = originalDate.substring(0, 4);
   String month = originalDate.substring(5, 7);
   String day = originalDate.substring(8, 10);
 
@@ -79,4 +77,12 @@ List<String> splitStringEvenly(String text) {
   }
 
   return [firstPart, secondPart];
+}
+
+String listToString(List<String> strings) {
+  // 각 요소에 큰따옴표를 추가합니다.
+  List<String> quotedStrings = strings.map((str) => '"$str"').toList();
+
+  // 쉼표로 구분하여 하나의 문자열로 결합합니다.
+  return quotedStrings.join(', ');
 }

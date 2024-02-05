@@ -13,13 +13,13 @@ class SignInState extends Equatable {
   final SignInStatus signInStatus;
   final CustomError error;
 
-  SignInState({
+  const SignInState({
     required this.signInStatus,
     required this.error,
   });
 
   factory SignInState.initial() {
-    return SignInState(
+    return const SignInState(
         signInStatus: SignInStatus.initial, error: CustomError());
   }
 

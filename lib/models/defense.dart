@@ -34,7 +34,7 @@ class DefenseModel extends Equatable {
   }
 
   factory DefenseModel.initial() {
-    return DefenseModel(
+    return const DefenseModel(
         id: -1,
         course: "",
         day: -1,

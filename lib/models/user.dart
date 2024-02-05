@@ -1,7 +1,5 @@
 import 'package:dopamine_defense_1/functions.dart';
-import 'package:dopamine_defense_1/main.dart';
 import 'package:equatable/equatable.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
 
 class UserModel extends Equatable {
   final String id;
@@ -15,7 +13,7 @@ class UserModel extends Equatable {
   final String push; // 푸쉬알림 설정했는지
   final bool trial; // 한번이라도 했는지
 
-  UserModel(
+  const UserModel(
       {required this.id,
       required this.name,
       required this.grade,
@@ -24,11 +22,11 @@ class UserModel extends Equatable {
       required this.word,
       required this.date,
       required this.entitlementIsActive,
-      required this.push, required this.trial});
+      required this.push,
+      required this.trial});
 
   factory UserModel.fromDoc(var userDoc, bool subscribed) {
     final userData = userDoc as Map<String, dynamic>?;
-    print(userData);
 
     return UserModel(
         id: userData!['id'],
@@ -40,7 +38,7 @@ class UserModel extends Equatable {
         date: userData['date'] ?? getCurrentDate(),
         entitlementIsActive: subscribed,
         push: userData["push"] ?? '',
-    trial: userData['trial']??false);
+        trial: userData['trial'] ?? false);
   }
 
   // 어떤 state에서 유저정보를 읽어올 때,
@@ -49,7 +47,7 @@ class UserModel extends Equatable {
   // null을 허용하면, 귀찮은 일이 많이 생길 수 있어서
   // 겹칠 염려가 없는 non-null user를 사용하기 위해서 해당 initialuser()를 만듦
   factory UserModel.initialUser() {
-    return UserModel(
+    return const UserModel(
         id: '',
         name: '',
         grade: '',
@@ -58,12 +56,13 @@ class UserModel extends Equatable {
         word: 0,
         date: '',
         entitlementIsActive: false,
-        push: '',trial: false);
+        push: '',
+        trial: false);
   }
 
   @override
   List<Object> get props {
-    return [id, name, grade, level, date, entitlementIsActive, push];
+    return [id, name, grade, level, date, entitlementIsActive, push, trial];
   }
 
   @override
@@ -78,7 +77,8 @@ class UserModel extends Equatable {
       int? word,
       String? date,
       bool? entitlementIsActive,
-      String? push, bool?trial}) {
+      String? push,
+      bool? trial}) {
     return UserModel(
         id: id ?? this.id,
         name: name ?? this.name,
@@ -88,6 +88,7 @@ class UserModel extends Equatable {
         word: word ?? this.word,
         date: date ?? this.date,
         entitlementIsActive: entitlementIsActive ?? this.entitlementIsActive,
-        push: push ?? this.push, trial: trial??this.trial);
+        push: push ?? this.push,
+        trial: trial ?? this.trial);
   }
 }

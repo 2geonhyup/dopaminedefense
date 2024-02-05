@@ -12,7 +12,6 @@ class SignInProvider extends StateNotifier<SignInState> with LocatorMixin {
     try {
       await read<AuthRepository>().signIn();
       state = state.copyWith(signInStatus: SignInStatus.success);
-      print('signInState: $state');
     } on CustomError catch (e) {
       state = state.copyWith(signInStatus: SignInStatus.error, error: e);
       rethrow;
@@ -24,7 +23,6 @@ class SignInProvider extends StateNotifier<SignInState> with LocatorMixin {
     try {
       await read<AuthRepository>().signInWithApple();
       state = state.copyWith(signInStatus: SignInStatus.success);
-      print('signInState: $state');
     } on CustomError catch (e) {
       if (e.code == "중도포기") {
         state = SignInState.initial();

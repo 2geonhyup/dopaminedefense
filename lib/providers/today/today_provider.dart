@@ -14,8 +14,6 @@ class TodayProvider extends StateNotifier<TodayState> with LocatorMixin {
 
   // 오늘의 디펜스,참여현황을 가져옴
   Future<void> getToday({required UserModel user}) async {
-    state = state.copyWith(todayStatus: TodayStatus.loading);
-
     try {
       DefenseModel todayDefense = await read<DefenseRepository>()
           .getTodayDefense(
@@ -29,9 +27,8 @@ class TodayProvider extends StateNotifier<TodayState> with LocatorMixin {
         try {
           List<int> readRate = await read<DefenseRepository>()
               .getTodayRate(day: getCurrentDate());
-          print(readRate);
           state = state.copyWith(
-              todayStatus: TodayStatus.success,
+              todayStatus: TodayStatus.loaded,
               todayRead: todayReads,
               todayDefense: todayDefense,
               todayRate: readRate);
@@ -49,13 +46,19 @@ class TodayProvider extends StateNotifier<TodayState> with LocatorMixin {
   List<ReadModel> getTopDefense() {
     List<ReadModel> reads = state.todayRead;
     reads.sort((a, b) => b.score.compareTo(a.score));
-    return reads.take(3).toList();
+    List<ReadModel> topReads = reads.take(3).toList();
+    ReadModel top1 = topReads.isEmpty ? ReadModel.initial() : topReads[0];
+    ReadModel top2 = topReads.length < 2 ? ReadModel.initial() : topReads[1];
+    ReadModel top3 = topReads.length < 3 ? ReadModel.initial() : topReads[2];
+    return [top1, top2, top3];
+  }
+
+  void addTodayRead(ReadModel read) {
+    state = state.copyWith(todayRead: [...state.todayRead, read]);
   }
 
   int calculatePercentile(int myScore) {
     List scores = state.todayRead.map((e) => e.score).toList();
-    // 자신의 점수를 배열에 추가합니다.
-    scores.add(myScore);
 
     // 점수를 오름차순으로 정렬합니다.
     scores.sort();
@@ -64,7 +67,9 @@ class TodayProvider extends StateNotifier<TodayState> with LocatorMixin {
     int myIndex = scores.indexOf(myScore);
 
     // 상위 몇 퍼센트에 해당하는지 계산합니다.
-    double percentile = (scores.length - myIndex - 1) / (scores.length) * 100;
+    double percentile = scores.isEmpty
+        ? 1
+        : (scores.length - myIndex - 1) / (scores.length) * 100;
     return percentile == 0 ? 1 : percentile.ceil();
   }
 
