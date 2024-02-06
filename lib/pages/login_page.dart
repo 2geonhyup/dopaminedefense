@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../amplitude_config.dart';
 import '../models/custom_error.dart';
 import '../providers/sign_in/sign_in_provider.dart';
 import '../providers/sign_in/sign_in_state.dart';
@@ -33,6 +34,13 @@ class _LoginPageState extends State<LoginPage> {
         errorDialog(context, e);
       }
     }
+  }
+
+  @override
+  void initState() {
+    //앰플리튜드 로그인 화면
+    AmplitudeConfig.amplitude.logEvent("login-page");
+    super.initState();
   }
 
   @override

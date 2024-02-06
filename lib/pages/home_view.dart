@@ -1,4 +1,5 @@
 import 'package:action_slider/action_slider.dart';
+import 'package:dopamine_defense_1/amplitude_config.dart';
 import 'package:dopamine_defense_1/pages/loading_page.dart';
 import 'package:dopamine_defense_1/pages/score_page.dart';
 import 'package:dopamine_defense_1/pages/subscribe_page.dart';
@@ -12,6 +13,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../constants.dart';
 import '../functions.dart';
+import '../main.dart';
 import '../models/user.dart';
 import '../providers/auth/auth_provider.dart';
 import '../providers/profile/profile_provider.dart';
@@ -192,6 +194,8 @@ class ReadNavigateButton extends StatelessWidget {
       ),
       customForegroundBuilder: (context, state, child) => child!,
       action: (controller) {
+        //앰플리튜드 슬라이딩
+        AmplitudeConfig.amplitude.logEvent("go-to-defense");
         controller.setAnchorPosition(1);
         // 점수 화면 - 오늘 것 요약제출을 완료한 경우 (아직 채점중이더라도)
         if (todaySubmit) {

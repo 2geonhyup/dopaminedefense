@@ -1,3 +1,5 @@
+import 'package:amplitude_flutter/amplitude.dart';
+import 'package:dopamine_defense_1/amplitude_config.dart';
 import 'package:dopamine_defense_1/constants.dart';
 import 'package:dopamine_defense_1/pages/feedback_page.dart';
 import 'package:dopamine_defense_1/pages/home_page.dart';
@@ -37,10 +39,12 @@ import 'dart:io';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+  AmplitudeConfig().init();
 
   await dotenv.load(fileName: ".env");
   await sp.Supabase.initialize(

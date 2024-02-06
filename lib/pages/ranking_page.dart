@@ -4,6 +4,7 @@ import 'package:dopamine_defense_1/widgets/navigate_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../amplitude_config.dart';
 import '../constants.dart';
 import '../functions.dart';
 import '../models/read.dart';
@@ -23,6 +24,13 @@ class RankingPage extends StatefulWidget {
 
 class _FeedbackPageState extends State<RankingPage> {
   int selectedNum = 1;
+
+  @override
+  void initState() {
+    //앰플리튜드 랭킹 화면
+    AmplitudeConfig.amplitude.logEvent("ranking-page");
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,7 +1,9 @@
 import 'package:dopamine_defense_1/pages/login_page.dart';
+import 'package:dopamine_defense_1/pages/subscribe_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../amplitude_config.dart';
 import '../providers/auth/auth_state.dart';
 import '../providers/profile/profile_provider.dart';
 import '../providers/profile/profile_state.dart';
@@ -28,6 +30,8 @@ class _LoadingPageState extends State<LoadingPage> {
 
   @override
   void initState() {
+    //앰플리튜드 로딩 화면
+    AmplitudeConfig.amplitude.logEvent("loading-page");
     profileProv = context.read<ProfileProvider>();
     _removeListener = profileProv.addListener(errorDialogListener,
         fireImmediately:

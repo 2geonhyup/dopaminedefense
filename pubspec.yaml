@@ -57,6 +57,7 @@ dependencies:
   scrollable_positioned_list: ^0.3.8
   expandable_page_view: ^1.0.17
   flutter_cupertino_datetime_picker: ^3.0.0
+  amplitude_flutter: ^3.13.0
 
 
 dev_dependencies:
