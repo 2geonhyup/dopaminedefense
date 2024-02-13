@@ -187,7 +187,9 @@ class ScoreLayout extends StatelessWidget {
             NavigateButton(
               onPressed: () {
                 //피드백 페이지로 이동
-                Navigator.pushNamed(context, FeedbackPage.routeName);
+                loaded
+                    ? Navigator.pushNamed(context, FeedbackPage.routeName)
+                    : null;
               },
               text: loaded ? "자세히 보기" : "채점 중",
               icon: loaded

@@ -3,12 +3,9 @@ import 'package:provider/provider.dart';
 
 import '../amplitude_config.dart';
 import '../models/custom_error.dart';
-import '../providers/auth/auth_state.dart';
 import '../providers/sign_in/sign_in_provider.dart';
 import '../providers/sign_in/sign_in_state.dart';
 import '../utils/error_dialog.dart';
-import 'home_page.dart';
-import 'loading_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);

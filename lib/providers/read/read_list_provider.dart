@@ -6,7 +6,6 @@ import 'package:dopamine_defense_1/providers/profile/profile_state.dart';
 import 'package:dopamine_defense_1/providers/read/read_list_state.dart';
 import 'package:dopamine_defense_1/providers/today/today_provider.dart';
 import 'package:dopamine_defense_1/providers/today/today_state.dart';
-import 'package:dopamine_defense_1/repositories/profile_repository.dart';
 import 'package:state_notifier/state_notifier.dart';
 
 import '../../models/custom_error.dart';

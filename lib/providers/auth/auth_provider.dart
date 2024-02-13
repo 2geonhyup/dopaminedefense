@@ -26,7 +26,7 @@ class AuthProvider extends StateNotifier<AuthState> with LocatorMixin {
     super.update(watch);
   }
 
-  void signout() async {
+  Future<void> signout() async {
     await read<AuthRepository>().signOut();
   }
 }

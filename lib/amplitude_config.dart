@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import
+
 import 'package:amplitude_flutter/amplitude.dart';
 import 'package:amplitude_flutter/identify.dart';
 

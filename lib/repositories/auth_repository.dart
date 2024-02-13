@@ -2,8 +2,6 @@ import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
-import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/custom_error.dart';

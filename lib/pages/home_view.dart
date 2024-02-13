@@ -14,7 +14,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../constants.dart';
 import '../functions.dart';
-import '../main.dart';
 import '../models/user.dart';
 import '../providers/auth/auth_provider.dart';
 import '../providers/profile/profile_provider.dart';
@@ -22,7 +21,6 @@ import '../providers/profile/profile_state.dart';
 import '../providers/read/read_list_provider.dart';
 import '../providers/read/read_list_state.dart';
 import '../providers/today/today_state.dart';
-import 'login_page.dart';
 
 class TodayDefenseCard extends StatelessWidget {
   const TodayDefenseCard({Key? key, required this.todayState})
@@ -203,7 +201,6 @@ class ReadNavigateButton extends StatelessWidget {
         // 점수 화면 - 오늘 것 요약제출을 완료한 경우 (아직 채점중이더라도)
         if (todaySubmit) {
           Navigator.pushNamed(context, ScorePage.routeName);
-          // Navigator.pushNamed(context, SubscribePage.routeName);
         }
         // 구독 화면 - 이미 한번 읽었고, 아직 구독을 하지 않은 경우
         else if (user.trial && !user.entitlementIsActive) {
@@ -255,8 +252,11 @@ class _PopUpMenuWidgetState extends State<PopUpMenuWidget> {
         index: 1,
         title: "로그아웃",
         onTap: () async {
-          // Navigator.pushNamed(context, LoadingPage.routeName);
-          context.read<AuthProvider>().signout();
+          print("로그아웃 시작");
+          await context.read<AuthProvider>().signout();
+          // Navigator.of(context).popUntil((route) => false);
+          Navigator.pushReplacementNamed(context, LoadingPage.routeName);
+          print("로그아웃 끝");
         },
       ),
       PopUpMenu(
@@ -272,16 +272,12 @@ class _PopUpMenuWidgetState extends State<PopUpMenuWidget> {
       PopUpMenu(
         index: 3,
         title: "계정 탈퇴",
-        onTap: () async {
+        onTap: () {
           functionDialog(context, "알림", "정말로 계정을 삭제하시겠습니까?", () async {
-            context.mounted
-                ? Navigator.pushNamed(context, LoadingPage.routeName)
-                : null;
             await context.read<ReadListProvider>().removeRead();
-            context.mounted
-                ? await context.read<ProfileProvider>().removeProfile()
-                : null;
-            context.mounted ? context.read<AuthProvider>().signout() : null;
+            await context.read<ProfileProvider>().removeProfile();
+            await context.read<AuthProvider>().signout();
+            Navigator.pushReplacementNamed(context, LoadingPage.routeName);
           });
         },
       ),

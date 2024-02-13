@@ -1,6 +1,4 @@
 import 'package:dopamine_defense_1/pages/login_page.dart';
-import 'package:dopamine_defense_1/pages/ranking_page.dart';
-import 'package:dopamine_defense_1/pages/subscribe_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -72,6 +70,7 @@ class _LoadingPageState extends State<LoadingPage> {
 
       print("gohome");
       WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.of(context).popUntil((route) => false);
         Navigator.pushNamed(context, HomePage.routeName);
       });
     } else if (authState.authStatus == AuthStatus.unauthenticated) {

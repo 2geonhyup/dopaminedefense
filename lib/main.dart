@@ -1,4 +1,3 @@
-import 'package:amplitude_flutter/amplitude.dart';
 import 'package:dopamine_defense_1/amplitude_config.dart';
 import 'package:dopamine_defense_1/constants.dart';
 import 'package:dopamine_defense_1/pages/feedback_page.dart';
@@ -29,7 +28,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
-import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:purchases_flutter/models/store.dart';
