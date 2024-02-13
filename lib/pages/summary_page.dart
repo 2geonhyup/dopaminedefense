@@ -7,6 +7,7 @@ import 'package:dopamine_defense_1/pages/summary_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../amplitude_config.dart';
 import '../constants.dart';
 import '../functions.dart';
 
@@ -54,6 +55,8 @@ class _SummaryPageState extends State<SummaryPage> {
       setState(() {});
     });
     _startTimer();
+    //앰플리튜드 요약 화면
+    AmplitudeConfig.amplitude.logEvent("summary-page");
     super.initState();
   }
 

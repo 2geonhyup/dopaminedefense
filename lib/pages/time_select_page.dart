@@ -5,6 +5,7 @@ import 'package:dopamine_defense_1/widgets/navigate_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cupertino_datetime_picker/flutter_cupertino_datetime_picker.dart';
 import 'package:provider/provider.dart';
+import '../amplitude_config.dart';
 import '../widgets/back_icon.dart';
 
 class TimeSelectPage extends StatefulWidget {
@@ -17,6 +18,13 @@ class TimeSelectPage extends StatefulWidget {
 
 class _TimeSelectPageState extends State<TimeSelectPage> {
   DateTime _dateTime = DateTime.parse('2023-01-31 07:00');
+
+  @override
+  void initState() {
+    //앰플리튜드 시간 설정 화면
+    AmplitudeConfig.amplitude.logEvent("time-select-page");
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -10,7 +10,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../amplitude_config.dart';
 import '../constants.dart';
 
 class SubscribePage extends StatefulWidget {
@@ -144,6 +146,13 @@ class _OfferingViewState extends State<OfferingView> {
   bool loading = false;
 
   @override
+  void initState() {
+    //앰플리튜드 구독 화면
+    AmplitudeConfig.amplitude.logEvent("subscribe-page");
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -222,64 +231,102 @@ class _OfferingViewState extends State<OfferingView> {
           ),
           Padding(
             padding: const EdgeInsets.only(bottom: 34.0),
-            child: Center(
-              child: NavigateButton(
-                onPressed: () async {
-                  if (loading) return;
-                  setState(() {
-                    loading = true;
-                  });
-                  var myProductList = widget.offering.availablePackages;
-                  try {
-                    // 구매하기
-                    CustomerInfo customerInfo = await Purchases.purchasePackage(
-                        myProductList[selected]);
-                    // 구매 정보 가져오기
-                    EntitlementInfo? entitlement =
-                        customerInfo.entitlements.all[entitlementID];
-                    // 구독 성공
-                    if (entitlement != null && entitlement.isActive) {
-                      if (!context.mounted) return;
-                      context.read<ProfileProvider>().setSubscribe();
-                      Navigator.pushNamed(context, LoadingPage.routeName);
-                    }
-                  }
-                  //구독 실패
-                  on PlatformException catch (e) {
-                    if (e.message != "Purchase was cancelled.") {
-                      context.mounted
-                          ? errorDialog(
-                              context,
-                              const CustomError(
-                                  code: "알림", message: "구독이 완료되지 않았습니다."))
-                          : null;
-                    }
-                  }
-                  setState(() {
-                    loading = false;
-                  });
-                },
-                width: 342,
-                text: loading ? "구독 로딩 중" : "3일간 무료체험 시작하기",
-                foregroundColor: loading ? Colors.white : orangePoint,
-                backgroundColor: loading ? greyA : black1,
-                icon: loading
-                    ? const Padding(
-                        padding: EdgeInsets.only(left: 4.0),
-                        child: SizedBox(
-                          width: 15,
-                          height: 15,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                        onPressed: () async {
+                          final url = Uri.parse(
+                              'https://www.apple.com/legal/internet-services/itunes/dev/stdeula');
+                          if (await canLaunchUrl(url)) {
+                            launchUrl(url, mode: LaunchMode.platformDefault);
+                          }
+                        },
+                        child: Text(
+                          "이용 약관",
+                          style: regularGrey14.copyWith(
+                              decoration: TextDecoration.underline,
+                              decorationColor: grey7),
+                        )),
+                    TextButton(
+                        onPressed: () async {
+                          final url = Uri.parse(
+                              'https://daysandmoons1.notion.site/c719942cbb014f2fb14cce9b940b6725?pvs=4');
+                          if (await canLaunchUrl(url)) {
+                            launchUrl(url, mode: LaunchMode.platformDefault);
+                          }
+                        },
+                        child: Text(
+                          "개인 정보 처리 방침",
+                          style: regularGrey14.copyWith(
+                              decoration: TextDecoration.underline,
+                              decorationColor: grey7),
+                        )),
+                  ],
+                ),
+                Center(
+                  child: NavigateButton(
+                    onPressed: () async {
+                      if (loading) return;
+                      setState(() {
+                        loading = true;
+                      });
+                      var myProductList = widget.offering.availablePackages;
+                      try {
+                        // 구매하기
+                        CustomerInfo customerInfo =
+                            await Purchases.purchasePackage(
+                                myProductList[selected]);
+                        // 구매 정보 가져오기
+                        EntitlementInfo? entitlement =
+                            customerInfo.entitlements.all[entitlementID];
+                        // 구독 성공
+                        if (entitlement != null && entitlement.isActive) {
+                          if (!context.mounted) return;
+                          context.read<ProfileProvider>().setSubscribe();
+                          Navigator.pushNamed(context, LoadingPage.routeName);
+                        }
+                      }
+                      //구독 실패
+                      on PlatformException catch (e) {
+                        if (e.message != "Purchase was cancelled.") {
+                          context.mounted
+                              ? errorDialog(
+                                  context,
+                                  const CustomError(
+                                      code: "알림", message: "구독이 완료되지 않았습니다."))
+                              : null;
+                        }
+                      }
+                      setState(() {
+                        loading = false;
+                      });
+                    },
+                    width: 342,
+                    text: loading ? "구독 로딩 중" : "3일간 무료체험 시작하기",
+                    foregroundColor: loading ? Colors.white : orangePoint,
+                    backgroundColor: loading ? greyA : black1,
+                    icon: loading
+                        ? const Padding(
+                            padding: EdgeInsets.only(left: 4.0),
+                            child: SizedBox(
+                              width: 15,
+                              height: 15,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            ),
+                          )
+                        : const Icon(
+                            Icons.arrow_forward,
+                            size: 24,
                           ),
-                        ),
-                      )
-                    : const Icon(
-                        Icons.arrow_forward,
-                        size: 24,
-                      ),
-              ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],

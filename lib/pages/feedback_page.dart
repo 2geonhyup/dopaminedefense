@@ -7,6 +7,7 @@ import 'package:expandable_page_view/expandable_page_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../amplitude_config.dart';
 import '../constants.dart';
 import '../functions.dart';
 import '../models/read.dart';
@@ -39,6 +40,14 @@ class _FeedbackPageState extends State<FeedbackPage> {
   int _selected = 0;
   ScrollController scrollController = ScrollController();
   PageController pageController = PageController();
+
+  @override
+  void initState() {
+    //앰플리튜드 피드백 화면
+    AmplitudeConfig.amplitude.logEvent("feedback-page");
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     Color selectedColor = _colors[_selected];

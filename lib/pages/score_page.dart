@@ -8,6 +8,7 @@ import 'package:dopamine_defense_1/widgets/re_loading_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../amplitude_config.dart';
 import '../constants.dart';
 import '../main.dart';
 import '../models/read.dart';
@@ -24,6 +25,13 @@ class ScorePage extends StatefulWidget {
 }
 
 class _ScorePageState extends State<ScorePage> {
+  @override
+  void initState() {
+    super.initState();
+    // 앰플리튜드 점수 화면
+    AmplitudeConfig.amplitude.logEvent("score-page");
+  }
+
   @override
   Widget build(BuildContext context) {
     String userId = context.read<ProfileState>().user.id;
