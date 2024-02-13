@@ -24,7 +24,7 @@ class ReloadingScreen extends StatelessWidget {
           ),
           IconButton(
               onPressed: () {
-                Navigator.pushNamed(context, LoadingPage.routeName);
+                Navigator.pushReplacementNamed(context, LoadingPage.routeName);
               },
               icon: const Icon(
                 Icons.replay_circle_filled,

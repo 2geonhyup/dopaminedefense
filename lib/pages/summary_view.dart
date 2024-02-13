@@ -100,11 +100,13 @@ class _SummaryFieldState extends State<SummaryField> {
           // 제출 버튼
           NavigateButton(
             onPressed: () {
-              context.read<ReadListProvider>().summarySubmit(
-                    summary: _textEditingController.text,
-                    time: 300,
-                  );
-              Navigator.pushReplacementNamed(context, ScorePage.routeName);
+              if (_textEditingController.text.length > 20) {
+                context.read<ReadListProvider>().summarySubmit(
+                      summary: _textEditingController.text,
+                      time: 300,
+                    );
+                Navigator.pushReplacementNamed(context, ScorePage.routeName);
+              }
             },
             text: "제출하기",
             backgroundColor:

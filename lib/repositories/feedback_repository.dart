@@ -22,7 +22,6 @@ class FeedbackRepository {
       }
 
       String feedbackJson = removeJsonTags(summaryData[0]["feedback"]);
-
       final jsonData = jsonDecode(feedbackJson) as Map<String, dynamic>;
 
       return FeedbackModel.fromJson(jsonData);

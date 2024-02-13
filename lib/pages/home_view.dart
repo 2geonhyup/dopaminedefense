@@ -5,7 +5,8 @@ import 'package:dopamine_defense_1/pages/score_page.dart';
 import 'package:dopamine_defense_1/pages/subscribe_page.dart';
 import 'package:dopamine_defense_1/pages/summary_page.dart';
 import 'package:dopamine_defense_1/pages/time_select_page.dart';
-import 'package:dopamine_defense_1/utils/navigate_dialog.dart';
+import 'package:dopamine_defense_1/utils/function_dialog.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
@@ -21,6 +22,7 @@ import '../providers/profile/profile_state.dart';
 import '../providers/read/read_list_provider.dart';
 import '../providers/read/read_list_state.dart';
 import '../providers/today/today_state.dart';
+import 'login_page.dart';
 
 class TodayDefenseCard extends StatelessWidget {
   const TodayDefenseCard({Key? key, required this.todayState})
@@ -45,8 +47,9 @@ class TodayDefenseCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
+        Container(
           height: 19,
+          color: Colors.transparent,
           child: Text(
             getDateWithWeekday(),
             style: regularGrey16,
@@ -200,6 +203,7 @@ class ReadNavigateButton extends StatelessWidget {
         // 점수 화면 - 오늘 것 요약제출을 완료한 경우 (아직 채점중이더라도)
         if (todaySubmit) {
           Navigator.pushNamed(context, ScorePage.routeName);
+          // Navigator.pushNamed(context, SubscribePage.routeName);
         }
         // 구독 화면 - 이미 한번 읽었고, 아직 구독을 하지 않은 경우
         else if (user.trial && !user.entitlementIsActive) {
@@ -251,8 +255,8 @@ class _PopUpMenuWidgetState extends State<PopUpMenuWidget> {
         index: 1,
         title: "로그아웃",
         onTap: () async {
+          // Navigator.pushNamed(context, LoadingPage.routeName);
           context.read<AuthProvider>().signout();
-          Navigator.pushNamed(context, LoadingPage.routeName);
         },
       ),
       PopUpMenu(
@@ -270,14 +274,14 @@ class _PopUpMenuWidgetState extends State<PopUpMenuWidget> {
         title: "계정 탈퇴",
         onTap: () async {
           functionDialog(context, "알림", "정말로 계정을 삭제하시겠습니까?", () async {
+            context.mounted
+                ? Navigator.pushNamed(context, LoadingPage.routeName)
+                : null;
             await context.read<ReadListProvider>().removeRead();
             context.mounted
                 ? await context.read<ProfileProvider>().removeProfile()
                 : null;
             context.mounted ? context.read<AuthProvider>().signout() : null;
-            context.mounted
-                ? Navigator.pushNamed(context, LoadingPage.routeName)
-                : null;
           });
         },
       ),

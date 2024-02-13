@@ -63,4 +63,25 @@ class FeedbackModel extends Equatable {
 
   @override
   bool get stringify => true;
+
+  FeedbackModel copyWith({
+    String? comprehensiveFeedback,
+    List<String>? clarifySpecificMisunderstandings,
+    List<String>? frequentlyUsedWords,
+    Map<String, dynamic>? inferredStudentSummary,
+    List<String>? misInterpretations,
+    List<String>? keyPointsAddressed,
+  }) {
+    return FeedbackModel(
+      comprehensiveFeedback:
+          comprehensiveFeedback ?? this.comprehensiveFeedback,
+      clarifySpecificMisunderstandings: clarifySpecificMisunderstandings ??
+          this.clarifySpecificMisunderstandings,
+      frequentlyUsedWords: frequentlyUsedWords ?? this.frequentlyUsedWords,
+      inferredStudentSummary:
+          inferredStudentSummary ?? this.inferredStudentSummary,
+      misInterpretations: misInterpretations ?? this.misInterpretations,
+      keyPointsAddressed: keyPointsAddressed ?? this.keyPointsAddressed,
+    );
+  }
 }

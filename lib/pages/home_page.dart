@@ -122,6 +122,7 @@ class HomeLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TodayState todayState = context.watch<TodayState>();
+
     final ReadListState readListState = context.watch<ReadListState>();
     // _getRead 함수 실행 결과 (시작, 로딩 중, 로딩 완료, 에러)
     final ReadListStatus readListStatus = readListState.readListStatus;
@@ -131,10 +132,13 @@ class HomeLayout extends StatelessWidget {
     // 오늘 제출 했는지 판단
     final bool todaySubmit = readListState.reads
         .any((element) => element.defenseId == todayState.todayDefense.id);
+    print(todaySubmit);
 
     // 에러 발생
     if (readListStatus == ReadListStatus.error ||
         todayStatus == TodayStatus.error) {
+      print(readListState.error);
+      print(todayState.error);
       // 다시 로딩 버튼
       return const ReloadingScreen(text: "죄송합니다. 다시 로딩해주세요.");
     }
@@ -161,8 +165,8 @@ class HomeLayout extends StatelessWidget {
         const Positioned(
           left: 61,
           top: 232,
+          bottom: 370,
           child: SizedBox(
-            height: 234,
             child: VerticalDivider(
               thickness: 0.5,
               color: greyA,
@@ -182,38 +186,36 @@ class HomeLayout extends StatelessWidget {
         Positioned(
             top: 110,
             left: 24,
-            child: Container(
-              color: Colors.transparent,
-              child: Image.asset(
-                "assets/images/logo.png",
-                width: 232,
-                height: 128,
-              ),
+            child: Image.asset(
+              "assets/images/logo.png",
+              width: 232,
+              height: 128,
             )),
         // 아래 위젯은 바닥기준 중앙 정렬
-
         Positioned(
           bottom: 0,
           left: 0,
           right: 0,
-          child: Column(
-            children: [
-              //오늘의 디펜스 카드
-              TodayDefenseCard(
-                todayState: todayState,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              //읽어보기
-              ReadNavigateButton(
-                readListStatus: readListStatus,
-                todaySubmit: todaySubmit,
-              ),
-              const SizedBox(
-                height: 60,
-              ),
-            ],
+          child: SizedBox(
+            child: Column(
+              children: [
+                //오늘의 디펜스 카드
+                TodayDefenseCard(
+                  todayState: todayState,
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                //읽어보기
+                ReadNavigateButton(
+                  readListStatus: readListStatus,
+                  todaySubmit: todaySubmit,
+                ),
+                const SizedBox(
+                  height: 60,
+                ),
+              ],
+            ),
           ),
         ),
       ],

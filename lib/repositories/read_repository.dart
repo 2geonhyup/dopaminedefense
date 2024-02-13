@@ -26,7 +26,8 @@ class ReadRepository {
       final data = await supabaseClient
           .from('AppReadData')
           .select()
-          .eq('user_id', userId) as List;
+          .eq('user_id', userId)
+          .order('text_id', ascending: true) as List;
       List<ReadModel> appReadData = data.map((e) {
         return ReadModel.fromDoc(e);
       }).toList();

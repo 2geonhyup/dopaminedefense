@@ -3,6 +3,7 @@ import 'package:dopamine_defense_1/pages/loading_page.dart';
 import 'package:dopamine_defense_1/pages/subscribe_view.dart';
 import 'package:dopamine_defense_1/providers/profile/profile_provider.dart';
 import 'package:dopamine_defense_1/utils/error_dialog.dart';
+import 'package:dopamine_defense_1/utils/function_dialog.dart';
 import 'package:dopamine_defense_1/widgets/back_icon.dart';
 import 'package:dopamine_defense_1/widgets/navigate_button.dart';
 import 'package:dopamine_defense_1/widgets/re_loading_screen.dart';
@@ -178,13 +179,19 @@ class _OfferingViewState extends State<OfferingView> {
               const SizedBox(
                 height: 13,
               ),
-              Text(
-                'AI채점과 피드백까지!',
-                style: regularGrey16,
-              ),
-              const SizedBox(
-                height: 62,
-              ),
+              MediaQuery.of(context).size.height > 800
+                  ? Column(
+                      children: [
+                        Text(
+                          'AI채점과 피드백까지!',
+                          style: regularGrey16,
+                        ),
+                        const SizedBox(
+                          height: 62,
+                        ),
+                      ],
+                    )
+                  : SizedBox.shrink(),
               Text(
                 '멤버십',
                 style:
@@ -227,6 +234,49 @@ class _OfferingViewState extends State<OfferingView> {
                 reverse: true,
                 physics: const ClampingScrollPhysics(),
               ),
+              Center(
+                child: TextButton(
+                    onPressed: () async {
+                      try {
+                        if (loading) return;
+                        setState(() {
+                          loading = true;
+                        });
+                        CustomerInfo customerInfo =
+                            await Purchases.restorePurchases();
+                        // 구매 정보 가져오기
+                        EntitlementInfo? entitlement =
+                            customerInfo.entitlements.all[entitlementID];
+                        // 구독 성공
+                        if (entitlement != null && entitlement.isActive) {
+                          if (!context.mounted) return;
+                          context.read<ProfileProvider>().setSubscribe();
+                          functionOneButtonDialog(context, "성공", "구독 가져오기 완료",
+                              () {
+                            Navigator.pushNamed(context, LoadingPage.routeName);
+                          });
+                        } else {
+                          functionOneButtonDialog(context, "실패", "구독 기록이 없습니다",
+                              () {
+                            Navigator.pop(context);
+                          });
+                        }
+                      } on PlatformException catch (e) {
+                        errorDialog(
+                            context, CustomError(message: e.toString()));
+                      } finally {
+                        setState(() {
+                          loading = false;
+                        });
+                      }
+                    },
+                    child: Text(
+                      "이미 구독하셨다면 가져오기",
+                      style: regularGrey16.copyWith(
+                          decoration: TextDecoration.underline,
+                          decorationColor: grey7),
+                    )),
+              ),
             ],
           ),
           Padding(
@@ -246,9 +296,7 @@ class _OfferingViewState extends State<OfferingView> {
                         },
                         child: Text(
                           "이용 약관",
-                          style: regularGrey14.copyWith(
-                              decoration: TextDecoration.underline,
-                              decorationColor: grey7),
+                          style: regularGrey14.copyWith(decorationColor: grey7),
                         )),
                     TextButton(
                         onPressed: () async {
@@ -260,9 +308,7 @@ class _OfferingViewState extends State<OfferingView> {
                         },
                         child: Text(
                           "개인 정보 처리 방침",
-                          style: regularGrey14.copyWith(
-                              decoration: TextDecoration.underline,
-                              decorationColor: grey7),
+                          style: regularGrey14.copyWith(decorationColor: grey7),
                         )),
                   ],
                 ),

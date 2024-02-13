@@ -44,6 +44,9 @@ class _ScorePageState extends State<ScorePage> {
     // 리드의 마지막 부분이 비었다면, 에러가 발생한 것
     if (reads.isEmpty ||
         todayRead.defenseId != context.read<TodayState>().todayDefense.id) {
+      print(reads);
+      print(todayRead.defenseId);
+      print(context.read<TodayState>().todayDefense.id);
       return const ReloadingScreen(text: "죄송합니다. 다시 로딩해주세요.");
     }
 

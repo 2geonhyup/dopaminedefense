@@ -3,9 +3,12 @@ import 'package:provider/provider.dart';
 
 import '../amplitude_config.dart';
 import '../models/custom_error.dart';
+import '../providers/auth/auth_state.dart';
 import '../providers/sign_in/sign_in_provider.dart';
 import '../providers/sign_in/sign_in_state.dart';
 import '../utils/error_dialog.dart';
+import 'home_page.dart';
+import 'loading_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -44,8 +47,15 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final signInState = context.watch<SignInState>();
+
     return PopScope(
         canPop: false,
         child: Scaffold(
@@ -86,7 +96,7 @@ class _LoginPageState extends State<LoginPage> {
                 Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 14.0),
+                      padding: const EdgeInsets.only(bottom: 50.0),
                       child: InkWell(
                           onTap: signInState.signInStatus ==
                                   SignInStatus.submitting
@@ -98,19 +108,19 @@ class _LoginPageState extends State<LoginPage> {
                               child: Image.asset(
                                   'assets/images/apple-login.png'))),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 60.0),
-                      child: InkWell(
-                          onTap: signInState.signInStatus ==
-                                  SignInStatus.submitting
-                              ? null
-                              : _submit,
-                          child: SizedBox(
-                              width: 342,
-                              height: 52,
-                              child: Image.asset(
-                                  'assets/images/kakao-login.png'))),
-                    ),
+                    // Padding(
+                    //   padding: const EdgeInsets.only(bottom: 60.0),
+                    //   child: InkWell(
+                    //       onTap: signInState.signInStatus ==
+                    //               SignInStatus.submitting
+                    //           ? null
+                    //           : _submit,
+                    //       child: SizedBox(
+                    //           width: 342,
+                    //           height: 52,
+                    //           child: Image.asset(
+                    //               'assets/images/kakao-login.png'))),
+                    // ),
                   ],
                 ),
               ],
@@ -118,4 +128,22 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ));
   }
+}
+
+showLoaderDialog(BuildContext context) {
+  AlertDialog alert = AlertDialog(
+    content: new Row(
+      children: [
+        CircularProgressIndicator(),
+        Container(margin: EdgeInsets.only(left: 7), child: Text("Loading...")),
+      ],
+    ),
+  );
+  showDialog(
+    barrierDismissible: false,
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
 }

@@ -29,6 +29,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:purchases_flutter/models/store.dart';
@@ -50,6 +51,9 @@ void main() async {
   await sp.Supabase.initialize(
     url: 'https://ebneycbqwtuhyxggghia.supabase.co',
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+    authOptions: const sp.FlutterAuthClientOptions(
+      authFlowType: sp.AuthFlowType.implicit,
+    ),
   );
   if (Platform.isIOS || Platform.isMacOS) {
     StoreConfig(
@@ -123,7 +127,7 @@ class MyApp extends StatelessWidget {
             primary: orangePoint, // 기본 색상
           ),
         ),
-        home: const LoadingPage(),
+        initialRoute: '/loading',
         routes: {
           LoginPage.routeName: (context) => const LoginPage(),
           HomePage.routeName: (context) => const HomePage(),

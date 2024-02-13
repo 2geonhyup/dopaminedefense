@@ -6,6 +6,7 @@ import 'package:dopamine_defense_1/providers/profile/profile_state.dart';
 import 'package:dopamine_defense_1/providers/read/read_list_state.dart';
 import 'package:dopamine_defense_1/providers/today/today_provider.dart';
 import 'package:dopamine_defense_1/providers/today/today_state.dart';
+import 'package:dopamine_defense_1/repositories/profile_repository.dart';
 import 'package:state_notifier/state_notifier.dart';
 
 import '../../models/custom_error.dart';
@@ -57,6 +58,7 @@ class ReadListProvider extends StateNotifier<ReadListState> with LocatorMixin {
   }) async {
     DefenseModel defense = read<TodayState>().todayDefense;
     UserModel user = read<ProfileState>().user;
+    print("summarysubmit");
 
     final newRead = ReadModel(
         date: getCurrentDate(),
@@ -71,8 +73,9 @@ class ReadListProvider extends StateNotifier<ReadListState> with LocatorMixin {
     state = state.copyWith(reads: newReads);
     // 유저가 첫 시도라면 trial을 true로 바꿈
     if (!read<ProfileState>().user.trial) {
-      await read<ProfileProvider>().setTrial();
+      read<ProfileProvider>().setTrial();
     }
+
     try {
       await read<ReadRepository>().sendSummary(
           summary: summary, user: user, time: time, defense: defense);
@@ -90,6 +93,7 @@ class ReadListProvider extends StateNotifier<ReadListState> with LocatorMixin {
       newRead,
     ];
     state = state.copyWith(reads: newReads);
+
     // 오늘의 읽기 목록에 내가 읽은 것 추가
     read<TodayProvider>().addTodayRead(newRead);
   }

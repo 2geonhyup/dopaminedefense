@@ -46,6 +46,7 @@ class ProfileProvider extends StateNotifier<ProfileState> with LocatorMixin {
   }
 
   Future<void> setTime({required String push}) async {
+    print("settime");
     try {
       await read<ProfileRepository>().setPushTime(user: state.user, push: push);
       state = state.copyWith(user: state.user.copyWith(push: push));

@@ -91,9 +91,7 @@ class _TimeSelectPageState extends State<TimeSelectPage> {
                   await context
                       .read<ProfileProvider>()
                       .setTime(push: '$hour:$min');
-                  context.mounted
-                      ? Navigator.pushNamed(context, HomePage.routeName)
-                      : null;
+                  context.mounted ? Navigator.pop(context) : null;
                 },
                 width: 342,
                 text: "완료",

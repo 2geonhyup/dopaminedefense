@@ -28,17 +28,26 @@ class ReadModel extends Equatable {
 
   factory ReadModel.fromDoc(var readDoc) {
     final readData = readDoc as Map<String, dynamic>?;
+    FeedbackModel feedback;
+    if (readData!["feedback"] == null) {
+      feedback = FeedbackModel.initialFeedback();
+    }
+    try {
+      feedback = FeedbackModel.fromJson(jsonDecode(readData["feedback"]));
+    } catch (e) {
+      feedback = FeedbackModel.initialFeedback()
+          .copyWith(comprehensiveFeedback: readData["feedback"].toString());
+    }
+    print(feedback);
     return ReadModel(
-        date: readData!["created_at"] ?? '',
+        date: readData["created_at"] ?? '',
         time: readData["time"] ?? 0,
         length: readData["length"] ?? 0,
         defenseId: readData["text_id"] ?? 0,
         readStatus: ReadStatus.end,
         score: readData["score"] ?? 0,
         summary: readData["summary"] ?? '',
-        feedback: readData["feedback"] == null
-            ? FeedbackModel.initialFeedback()
-            : FeedbackModel.fromJson(jsonDecode(readData["feedback"])));
+        feedback: feedback);
   }
 
   factory ReadModel.initial() {

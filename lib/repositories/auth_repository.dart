@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/custom_error.dart';
@@ -20,9 +22,9 @@ class AuthRepository {
     try {
       await supabaseClient.auth.signInWithOAuth(
         OAuthProvider.kakao,
-        authScreenLaunchMode: LaunchMode.platformDefault,
+        authScreenLaunchMode: LaunchMode.inAppWebView,
         redirectTo:
-            kIsWeb ? null : 'io.supabase.dopaminedefense1://login-callback/',
+            kIsWeb ? null : 'io.supabase.dopaminedefense://login-callback',
       );
     } catch (e) {
       throw CustomError(

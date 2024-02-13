@@ -13,6 +13,7 @@ class SignInProvider extends StateNotifier<SignInState> with LocatorMixin {
       await read<AuthRepository>().signIn();
       state = state.copyWith(signInStatus: SignInStatus.success);
     } on CustomError catch (e) {
+      print(e);
       state = state.copyWith(signInStatus: SignInStatus.error, error: e);
       rethrow;
     }
