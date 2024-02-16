@@ -57,12 +57,6 @@ PODS:
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
-  - purchases_flutter (6.19.0):
-    - Flutter
-    - PurchasesHybridCommon (= 9.3.0)
-  - PurchasesHybridCommon (9.3.0):
-    - RevenueCat (= 4.33.0)
-  - RevenueCat (4.33.0)
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
@@ -81,7 +75,6 @@ DEPENDENCIES:
   - onesignal_flutter (from `.symlinks/plugins/onesignal_flutter/ios`)
   - OneSignalXCFramework (< 6.0, >= 5.0.0)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
-  - purchases_flutter (from `.symlinks/plugins/purchases_flutter/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - sign_in_with_apple (from `.symlinks/plugins/sign_in_with_apple/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
@@ -92,8 +85,6 @@ SPEC REPOS:
     - Amplitude
     - AnalyticsConnector
     - OneSignalXCFramework
-    - PurchasesHybridCommon
-    - RevenueCat
 
 EXTERNAL SOURCES:
   amplitude_flutter:
@@ -108,8 +99,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/onesignal_flutter/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
-  purchases_flutter:
-    :path: ".symlinks/plugins/purchases_flutter/ios"
   shared_preferences_foundation:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
   sign_in_with_apple:
@@ -129,9 +118,6 @@ SPEC CHECKSUMS:
   onesignal_flutter: 419a224915bbc03181d176a3cb507a88e64af92f
   OneSignalXCFramework: 72a6dbc5d97b7eba09a51837f7858d8957ac2629
   path_provider_foundation: 3784922295ac71e43754bd15e0653ccfd36a147c
-  purchases_flutter: 72d49bdd40138037da9e0cf29a0a355ff0bbed80
-  PurchasesHybridCommon: 809461dbc8ff23b4dd0d5260c005b4017d6205b6
-  RevenueCat: 1512a074bebd78b7efb341ce1c33bfc8d292c53a
   shared_preferences_foundation: b4c3b4cddf1c21f02770737f147a3f5da9d39695
   sign_in_with_apple: f3bf75217ea4c2c8b91823f225d70230119b8440
   url_launcher_ios: bbd758c6e7f9fd7b5b1d4cde34d2b95fcce5e812

@@ -161,7 +161,7 @@ class _SummaryPageState extends State<SummaryPage> {
                   child: Padding(
                     padding: const EdgeInsets.all(20),
                     child: Text(
-                      todayDefense.content + todayDefense.content,
+                      todayDefense.content,
                       style: regularBlack16.copyWith(
                           height: 1.58, letterSpacing: 0.1),
                     ),
