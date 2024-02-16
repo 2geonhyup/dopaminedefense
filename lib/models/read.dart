@@ -38,7 +38,6 @@ class ReadModel extends Equatable {
       feedback = FeedbackModel.initialFeedback()
           .copyWith(comprehensiveFeedback: readData["feedback"].toString());
     }
-    print(feedback);
     return ReadModel(
         date: readData["created_at"] ?? '',
         time: readData["time"] ?? 0,

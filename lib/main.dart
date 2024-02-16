@@ -30,8 +30,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:purchases_flutter/models/store.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sp;
 import 'store_config.dart';
 import 'dart:io';
@@ -53,12 +51,12 @@ void main() async {
       authFlowType: sp.AuthFlowType.implicit,
     ),
   );
-  if (Platform.isIOS || Platform.isMacOS) {
-    StoreConfig(
-      store: Store.appStore,
-      apiKey: dotenv.env['APPLE_API_KEY']!,
-    );
-  } else if (Platform.isAndroid) {}
+  // if (Platform.isIOS || Platform.isMacOS) {
+  //   StoreConfig(
+  //     store: Store.appStore,
+  //     apiKey: dotenv.env['APPLE_API_KEY']!,
+  //   );
+  // } else if (Platform.isAndroid) {}
 
   OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
   OneSignal.initialize("6fa0c0f8-9a52-4cc0-80db-7cff7d735cec");
@@ -131,7 +129,7 @@ class MyApp extends StatelessWidget {
           HomePage.routeName: (context) => const HomePage(),
           LoadingPage.routeName: (context) => const LoadingPage(),
           ScorePage.routeName: (context) => const ScorePage(),
-          SubscribePage.routeName: (context) => const SubscribePage(),
+          // SubscribePage.routeName: (context) => const SubscribePage(),
           SummaryPage.routeName: (context) => const SummaryPage(),
           FeedbackPage.routeName: (context) => const FeedbackPage(),
           RankingPage.routeName: (context) => const RankingPage(),

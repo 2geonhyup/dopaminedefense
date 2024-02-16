@@ -1,6 +1,5 @@
 import 'package:dopamine_defense_1/constants.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../functions.dart';
@@ -17,13 +16,13 @@ class ProfileRepository {
 
   Future<UserModel> getProfile({required String id}) async {
     // 구독 관련 프로필 설정
-    await Purchases.setLogLevel(LogLevel.debug);
-    PurchasesConfiguration configuration;
-    configuration = PurchasesConfiguration(StoreConfig.instance.apiKey)
-      ..appUserID = id
-      ..observerMode = false;
-
-    await Purchases.configure(configuration);
+    // await Purchases.setLogLevel(LogLevel.debug);
+    // PurchasesConfiguration configuration;
+    // configuration = PurchasesConfiguration(StoreConfig.instance.apiKey)
+    //   ..appUserID = id
+    //   ..observerMode = false;
+    //
+    // await Purchases.configure(configuration);
     //슈퍼베이스 프로필 설정
     var manager = SupabaseManager(supabaseClient);
     // 해당 값이 존재하지 않을 때만 insert
@@ -41,13 +40,15 @@ class ProfileRepository {
           .eq('id', supabaseClient.auth.currentUser!.email.toString())
           .limit(1);
       if (profileData.isNotEmpty) {
-        CustomerInfo customerInfo = await Purchases.getCustomerInfo();
-        bool subscribed = false;
-        if (customerInfo.entitlements.all[entitlementID] != null) {
-          subscribed = customerInfo.entitlements.all[entitlementID]!.isActive;
-        }
-        final UserModel currentUser =
-            UserModel.fromDoc(profileData[0], subscribed);
+        // CustomerInfo customerInfo = await Purchases.getCustomerInfo();
+        // bool subscribed = false;
+        // if (customerInfo.entitlements.all[entitlementID] != null) {
+        //   subscribed = customerInfo.entitlements.all[entitlementID]!.isActive;
+        // }
+        // final UserModel currentUser =
+        //     UserModel.fromDoc(profileData[0], subscribed);
+        // 무료버전
+        final UserModel currentUser = UserModel.fromDoc(profileData[0]);
 
         return currentUser;
       } else {

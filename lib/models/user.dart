@@ -9,7 +9,7 @@ class UserModel extends Equatable {
   final int time;
   final int word;
   final String date;
-  final bool entitlementIsActive; // 구독했는지
+  // final bool entitlementIsActive; // 구독했는지
   final String push; // 푸쉬알림 설정했는지
   final bool trial; // 한번이라도 했는지
 
@@ -21,11 +21,11 @@ class UserModel extends Equatable {
       required this.time,
       required this.word,
       required this.date,
-      required this.entitlementIsActive,
+      // required this.entitlementIsActive,
       required this.push,
       required this.trial});
 
-  factory UserModel.fromDoc(var userDoc, bool subscribed) {
+  factory UserModel.fromDoc(var userDoc) {
     final userData = userDoc as Map<String, dynamic>?;
 
     return UserModel(
@@ -36,7 +36,7 @@ class UserModel extends Equatable {
         time: userData['time'] ?? 0,
         word: userData['word'] ?? 0,
         date: userData['date'] ?? getCurrentDate(),
-        entitlementIsActive: subscribed,
+        // entitlementIsActive: subscribed,
         push: userData["push"] ?? '',
         trial: userData['trial'] ?? false);
   }
@@ -55,14 +55,14 @@ class UserModel extends Equatable {
         time: 0,
         word: 0,
         date: '',
-        entitlementIsActive: false,
+        // entitlementIsActive: false,
         push: '',
         trial: false);
   }
 
   @override
   List<Object> get props {
-    return [id, name, grade, level, date, entitlementIsActive, push, trial];
+    return [id, name, grade, level, date, push, trial];
   }
 
   @override
@@ -76,7 +76,7 @@ class UserModel extends Equatable {
       int? time,
       int? word,
       String? date,
-      bool? entitlementIsActive,
+      // bool? entitlementIsActive,
       String? push,
       bool? trial}) {
     return UserModel(
@@ -87,7 +87,7 @@ class UserModel extends Equatable {
         time: time ?? this.time,
         word: word ?? this.word,
         date: date ?? this.date,
-        entitlementIsActive: entitlementIsActive ?? this.entitlementIsActive,
+        // entitlementIsActive: entitlementIsActive ?? this.entitlementIsActive,
         push: push ?? this.push,
         trial: trial ?? this.trial);
   }

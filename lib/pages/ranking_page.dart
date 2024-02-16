@@ -176,15 +176,20 @@ class _FeedbackPageState extends State<RankingPage> {
             padding: const EdgeInsets.only(bottom: 34.0),
             child: NavigateButton(
                 onPressed: () {
-                  if (!context.read<ProfileState>().user.entitlementIsActive) {
-                    Navigator.pushNamed(context, SubscribePage.routeName);
-                  } else {
-                    Navigator.pushNamed(context, HomePage.routeName);
-                  }
+                  // if (!context.read<ProfileState>().user.entitlementIsActive) {
+                  //   Navigator.pushNamed(context, SubscribePage.routeName);
+                  // } else {
+                  //   Navigator.pushNamed(context, HomePage.routeName);
+                  // }
+                  // 무료 버전
+                  Navigator.pushNamed(context, HomePage.routeName);
                 },
-                text: context.read<ProfileState>().user.entitlementIsActive
-                    ? "홈으로 돌아가기"
-                    : "내일도 읽어보기"),
+                text: "홈으로 돌아가기"
+                // context.read<ProfileState>().user.entitlementIsActive
+                //     ? "홈으로 돌아가기"
+                //     : "내일도 읽어보기"
+
+                ),
           )
         ],
       ),

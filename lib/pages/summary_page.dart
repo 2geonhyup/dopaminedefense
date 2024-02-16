@@ -25,7 +25,7 @@ class SummaryPage extends StatefulWidget {
 class _SummaryPageState extends State<SummaryPage> {
   TextEditingController textEditingController = TextEditingController();
   final ScrollController _controller = ScrollController();
-  bool _floating = true;
+  bool _floating = false;
   int seconds = 0;
   late Timer _timer;
   void _startTimer() {
@@ -161,7 +161,7 @@ class _SummaryPageState extends State<SummaryPage> {
                   child: Padding(
                     padding: const EdgeInsets.all(20),
                     child: Text(
-                      todayDefense.content,
+                      todayDefense.content + todayDefense.content,
                       style: regularBlack16.copyWith(
                           height: 1.58, letterSpacing: 0.1),
                     ),

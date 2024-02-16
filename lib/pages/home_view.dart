@@ -8,6 +8,7 @@ import 'package:dopamine_defense_1/pages/time_select_page.dart';
 import 'package:dopamine_defense_1/utils/function_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -203,9 +204,10 @@ class ReadNavigateButton extends StatelessWidget {
           Navigator.pushNamed(context, ScorePage.routeName);
         }
         // 구독 화면 - 이미 한번 읽었고, 아직 구독을 하지 않은 경우
-        else if (user.trial && !user.entitlementIsActive) {
-          Navigator.pushNamed(context, SubscribePage.routeName);
-        }
+        // 무료버전이라 주석 처리
+        // else if (user.trial && !user.entitlementIsActive) {
+        //   Navigator.pushNamed(context, SubscribePage.routeName);
+        // }
         // 글읽기 화면 - 나머지 경우 (구독을 하고 오늘 것 완료하지 않았거나, 구독을 안했는데 첫 참여인 경우)
         else {
           Navigator.pushNamed(context, SummaryPage.routeName);
@@ -223,7 +225,9 @@ class ReadNavigateButton extends StatelessWidget {
           const SizedBox(
             width: 23,
           ),
-          Image.asset("assets/images/three-arrow.png"),
+          Image.asset(
+            "assets/images/three-arrow.png",
+          )
         ],
       ),
     );
@@ -254,8 +258,6 @@ class _PopUpMenuWidgetState extends State<PopUpMenuWidget> {
         onTap: () async {
           print("로그아웃 시작");
           await context.read<AuthProvider>().signout();
-          // Navigator.of(context).popUntil((route) => false);
-          Navigator.pushReplacementNamed(context, LoadingPage.routeName);
           print("로그아웃 끝");
         },
       ),
@@ -277,7 +279,6 @@ class _PopUpMenuWidgetState extends State<PopUpMenuWidget> {
             await context.read<ReadListProvider>().removeRead();
             await context.read<ProfileProvider>().removeProfile();
             await context.read<AuthProvider>().signout();
-            Navigator.pushReplacementNamed(context, LoadingPage.routeName);
           });
         },
       ),

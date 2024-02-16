@@ -198,6 +198,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_animate:
+    dependency: "direct main"
+    description:
+      name: flutter_animate
+      sha256: "7c8a6594a9252dad30cc2ef16e33270b6248c4dedc3b3d06c86c4f3f4dc05ae5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.5.0"
   flutter_cupertino_datetime_picker:
     dependency: "direct main"
     description:
@@ -214,6 +222,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.1.0"
+  flutter_gradient_animation_text:
+    dependency: "direct main"
+    description:
+      name: flutter_gradient_animation_text
+      sha256: "0e144ecfae2c77da8444a56fcd17b2c6490e4b22a6fd32668fc581202ba02e91"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.2"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -222,6 +238,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.3"
+  flutter_shaders:
+    dependency: transitive
+    description:
+      name: flutter_shaders
+      sha256: "02750b545c01ff4d8e9bbe8f27a7731aa3778402506c67daa1de7f5fc3f4befe"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.2"
   flutter_state_notifier:
     dependency: "direct main"
     description:
@@ -248,14 +272,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  freezed_annotation:
-    dependency: transitive
-    description:
-      name: freezed_annotation
-      sha256: c3fd9336eb55a38cc1bbd79ab17573113a8deccd0ecbbf926cca3c62803b5c2d
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.4.1"
   functions_client:
     dependency: transitive
     description:
@@ -608,14 +624,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.1"
-  purchases_flutter:
-    dependency: "direct main"
-    description:
-      name: purchases_flutter
-      sha256: "27bef8c37c9863a0d280ed4668950fc1a17f36807f80c596c280795c8613ee07"
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.19.0"
   quiver:
     dependency: transitive
     description:

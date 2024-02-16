@@ -87,16 +87,19 @@ class _FeedbackPageState extends State<FeedbackPage> {
                               // 홈으로 돌아가는 x아이콘 (구독 안한 경우 구독화면 뜰 수도 있음)
                               GestureDetector(
                                 onTap: () {
-                                  if (!context
-                                      .read<ProfileState>()
-                                      .user
-                                      .entitlementIsActive) {
-                                    Navigator.pushNamed(
-                                        context, SubscribePage.routeName);
-                                  } else {
-                                    Navigator.pushNamed(
-                                        context, HomePage.routeName);
-                                  }
+                                  // if (!context
+                                  //     .read<ProfileState>()
+                                  //     .user
+                                  //     .entitlementIsActive) {
+                                  //   Navigator.pushNamed(
+                                  //       context, SubscribePage.routeName);
+                                  // } else {
+                                  //   Navigator.pushNamed(
+                                  //       context, HomePage.routeName);
+                                  // }
+// 무료 버전
+                                  Navigator.pushNamed(
+                                      context, HomePage.routeName);
                                 },
                                 child: Image.asset(
                                   'assets/images/x_bg.png',
@@ -156,16 +159,18 @@ class _FeedbackPageState extends State<FeedbackPage> {
                     MediaQuery.of(context).size.height <= 800
                         ? GestureDetector(
                             onTap: () {
-                              if (!context
-                                  .read<ProfileState>()
-                                  .user
-                                  .entitlementIsActive) {
-                                Navigator.pushNamed(
-                                    context, SubscribePage.routeName);
-                              } else {
-                                Navigator.pushNamed(
-                                    context, HomePage.routeName);
-                              }
+                              // if (!context
+                              //     .read<ProfileState>()
+                              //     .user
+                              //     .entitlementIsActive) {
+                              //   Navigator.pushNamed(
+                              //       context, SubscribePage.routeName);
+                              // } else {
+                              //   Navigator.pushNamed(
+                              //       context, HomePage.routeName);
+                              // }
+                              // 무료버전
+                              Navigator.pushNamed(context, HomePage.routeName);
                             },
                             child: Image.asset(
                               'assets/images/x_bg.png',

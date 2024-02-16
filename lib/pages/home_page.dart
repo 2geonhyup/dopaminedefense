@@ -30,8 +30,19 @@ class _HomePageState extends State<HomePage> {
   void _showPushTimeDialog() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // 구독했는데 푸쉬 알림 시간 설정 안한 경우
-      if (context.read<ProfileState>().user.push == '' &&
-          context.read<ProfileState>().user.entitlementIsActive) {
+      // if (context.read<ProfileState>().user.push == '' &&
+      //     context.read<ProfileState>().user.entitlementIsActive) {
+      //   showDialog(
+      //     context: context,
+      //     builder: (BuildContext context) {
+      //       return const PushTimeDialog();
+      //     },
+      //   ).then(
+      //       //선택 안했을 경우, 오전 8시로 설정
+      //       (value) => context.read<ProfileProvider>().setTime(push: '08:00'));
+      // }
+      //무료버전
+      if (context.read<ProfileState>().user.push == '') {
         showDialog(
           context: context,
           builder: (BuildContext context) {

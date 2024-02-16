@@ -55,10 +55,10 @@ class ProfileProvider extends StateNotifier<ProfileState> with LocatorMixin {
     }
   }
 
-  void setSubscribe() {
-    final UserModel user = state.user;
-    state = state.copyWith(user: user.copyWith(entitlementIsActive: true));
-  }
+  // void setSubscribe() {
+  //   final UserModel user = state.user;
+  //   state = state.copyWith(user: user.copyWith(entitlementIsActive: true));
+  // }
 
   Future<void> removeProfile() async {
     state = state.copyWith(profileStatus: ProfileStatus.loading);

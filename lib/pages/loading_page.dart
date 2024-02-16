@@ -57,9 +57,9 @@ class _LoadingPageState extends State<LoadingPage> {
   @override
   Widget build(BuildContext context) {
     final authState = context.watch<AuthState>();
-    final profileStatus = context.watch<ProfileState>().profileStatus;
-    print('loading$loadingHome');
-    print("auth");
+    final profileStatus = context
+        .select((ProfileState profileState) => profileState.profileStatus);
+
     if (authState.user != null) {
       _getProfile();
     }
@@ -68,10 +68,8 @@ class _LoadingPageState extends State<LoadingPage> {
         !loadingHome) {
       loadingHome = true;
 
-      print("gohome");
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.of(context).popUntil((route) => false);
-        Navigator.pushNamed(context, HomePage.routeName);
+        Navigator.pushReplacementNamed(context, HomePage.routeName);
       });
     } else if (authState.authStatus == AuthStatus.unauthenticated) {
       loadingHome = false;

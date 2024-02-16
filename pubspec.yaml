@@ -26,7 +26,7 @@ dependencies:
   flutter_time_picker_spinner: ^2.0.0
   onesignal_flutter: ^5.0.4
   ml_linalg: ^13.12.2
-  purchases_flutter: ^6.6.0
+#  purchases_flutter: ^6.6.0
   pie_chart: ^5.4.0
   action_slider: ^0.7.0
   step_progress_indicator: ^1.0.2
@@ -35,6 +35,8 @@ dependencies:
   flutter_cupertino_datetime_picker: ^3.0.0
   amplitude_flutter: ^3.13.0
   kakao_flutter_sdk: ^1.8.0
+  flutter_gradient_animation_text: ^1.0.2
+  flutter_animate: ^4.5.0
 
 
 dev_dependencies:
